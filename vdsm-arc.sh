@@ -122,7 +122,7 @@ qm set "$VM_ID" --cdrom none
 clear
 
 # Ask if the temporary file should be deleted
-echo -e "${Y}${WARN} Do you want to delete the downloaded file ($LATEST_FILENAME) from $DOWNLOAD_PATH? (y/N): ${X}"
+echo -e "${Y}${WARN} Do you want to delete the temp downloaded file ($LATEST_FILENAME) from $DOWNLOAD_PATH? (y/N): ${X}"
 read delete_answer
 echo ""
 
