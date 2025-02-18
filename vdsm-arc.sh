@@ -22,14 +22,14 @@ echo -e "${Y}CPU: 2 Cores | Mem: 4096MB | NIC: vmbr0 | Storage: local-lvm${X}"
 echo -e "${R}vDSM-Arc will be mapped as SATA0 > Do not change this!${X}"
 echo "-----"
 echo ""
-echo -e "${Y}${WARN}Run script now? (y/N)${X}"
+echo -e "${Y}${INFO}Run script now? (y/N)${X}"
 read run_script
 echo ""
 
 if [[ "$run_script" =~ ^[Yy]$ ]]; then
-		echo -e "${G}Running...${X}"
+		echo -e "${G}${OK}Running...${X}"
     else
-		echo -e "${R}Stopping...${X}"
+		echo -e "${R}${NOTOK}Stopping...${X}"
 		exit 1
 fi
 
@@ -40,7 +40,7 @@ for pkg in unzip wget; do
         echo -e "${Y}'$pkg' is not installed. Installing...${X}"
         apt-get update && apt-get install -y "$pkg"
         if ! command -v "$pkg" &> /dev/null; then
-            echo -e "${R}Error: '$pkg' could not be installed. Exiting.${X}"
+            echo -e "${R}${NOTOK}Error: '$pkg' could not be installed. Exiting.${X}"
             exit 1
         fi
     fi
@@ -128,9 +128,9 @@ echo ""
 if [[ "$delete_answer" =~ ^[Yy]$ ]]; then
     echo "Deleting the file..."
     rm -f "$DOWNLOAD_PATH/$LATEST_FILENAME"
-    echo -e "${G}($LATEST_FILENAME) from '$DOWNLOAD_PATH' deleted.${X}"
+    echo -e "${G}${OK}($LATEST_FILENAME) from '$DOWNLOAD_PATH' deleted.${X}"
 else
-    echo -e "${Y}($LATEST_FILENAME) from '$DOWNLOAD_PATH' was not deleted.${X}"
+    echo -e "${Y}${NOTOK}($LATEST_FILENAME) from '$DOWNLOAD_PATH' was not deleted.${X}"
 fi
 
 # Success
@@ -142,7 +142,7 @@ echo "-----"
 # Choose the Hard Disk 
 while true; do
 echo ""
-echo -e "${Y}Choose your option:${X}"
+echo -e "${Y}${DISK}Choose your option:${X}"
 echo -e "${C}a) Virtual Hard Disk${X}"
 echo -e "${C}b) Physical Hard Disk${X}"
 echo -e "${R}c) Exit${X}"
@@ -152,7 +152,7 @@ read -n 1 option
 		a)
 			echo -e "${C}Virtual Hard Disk${X}"
 			echo ""
-			echo -e "${Y}PVE > $VM_ID > Hardware > Add > Hard Disk (SATA1, SATA2,..)${X}"
+			echo -e "${Y}${INFO}PVE > $VM_ID > Hardware > Add > Hard Disk (SATA1, SATA2,..)${X}"
 			;;
 		b)
 			echo -e "${C}Physical Hard Disk${X}"
@@ -160,14 +160,14 @@ read -n 1 option
 			echo ""
 			echo -e "${C}Search for the disk you want to use...${X}"
 			echo -e "${C}Edit the following line and run in PVE shell:${X}"
-			echo -e "${Y}qm set $VM_ID -sata1 /dev/disk/by-id/ata-Samsung_SSD_870_QVO_8TB_XXSERIALNRXXX${X}"
+			echo -e "${Y}${INFO} qm set $VM_ID -sata1 /dev/disk/by-id/ata-Samsung_SSD_870_QVO_8TB_XXSERIALNRXXX${X}"
 			;;
 		c)
-			echo -e "${C}Exiting the script.${X}"
+			echo -e "${C}${OK}Exiting the script.${X}"
 			exit 0
 			;;
 		*)
-			echo -e "${R}Invalid input. Please choose 'a' | 'b' | 'c'.${X}"
+			echo -e "${R}${WARN}Invalid input. Please choose 'a' | 'b' | 'c'.${X}"
 			;;
 	esac
 done
