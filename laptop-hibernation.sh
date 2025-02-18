@@ -1,15 +1,34 @@
 #!/bin/bash
+export LANG=en_US.UTF-8
 
 # Import Colors
 source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/misc/colors.sh)
+source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/misc/emojis.sh)
 
 # Clearing screen
 clear
 
 # Post message
 echo""
-echo -e "${C}--- PVE-Laptop-Hibernation ---${X}"
+echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
+echo -e "${C}+++++++++++++++++ Laptop-Hibernation ++++++++++++++++++${X}"
+echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo""
+
+# Ask if the temporary file should be deleted
+echo -e "${Y}This script will add the required lines into 'logind.conf'${X}"
+echo -e "${Y}to use a PVE on a laptop without hibernation${X}"
+echo ""
+echo -e "${Y}Run script now? (y/N)${X}"
+read run_script
+echo ""
+
+if [[ "$run_script" =~ ^[Yy]$ ]]; then
+		echo -e "${G}Running...${X}"
+    else
+		echo -e "${R}Stopping...${X}"
+		exit 1
+fi
 
 # Ensure the script is run as root
 if [[ $EUID -ne 0 ]]; then
