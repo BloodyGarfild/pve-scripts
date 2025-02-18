@@ -28,6 +28,7 @@ echo ""
 
 if [[ "$run_script" =~ ^[Yy]$ ]]; then
 		echo -e "${G}${OK}Running...${X}"
+  		echo ""
     else
 		echo -e "${R}${NOTOK}Stopping...${X}"
 		exit 1
