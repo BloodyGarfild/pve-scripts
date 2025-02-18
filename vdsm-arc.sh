@@ -151,12 +151,12 @@ read -n 1 option
 
 	case "$option" in
 		a)
-			echo -e "${C}Virtual Hard Disk${X}"
+			echo -e "${C}${TAB}Virtual Hard Disk${X}"
 			echo ""
 			echo -e "${Y}${INFO}PVE > $VM_ID > Hardware > Add > Hard Disk (SATA1, SATA2,..)${X}"
 			;;
 		b)
-			echo -e "${C}Physical Hard Disk${X}"
+			echo -e "${C}${TAB}Physical Hard Disk${X}"
 			ls -l /dev/disk/by-id
 			echo ""
 			echo -e "${C}Search for the disk you want to use...${X}"
