@@ -15,7 +15,7 @@ echo -e "${C}+++++++++++++++++ vDSM-Arc-Installer ++++++++++++++++++${X}"
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo""
 
-# Ask if the temporary file should be deleted
+# Ask for continue script
 echo -e "${Y}vDSM-Arc default settings (can changed after creation)${X}"
 echo "-----"
 echo -e "${Y}CPU: 2 Cores | Mem: 4096MB | NIC: vmbr0 | Storage: local-lvm${X}"
