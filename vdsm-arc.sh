@@ -135,10 +135,10 @@ else
 fi
 
 # Success
-echo "-----"
+echo "------"
 echo -e "${G}${OK} VM $VM_NAME (ID: $VM_ID) has been successfully created!${X}"
 echo -e "${G}${OK} SATA0: Imported image (${NEW_IMG_FILE})${X}"
-echo "-----"
+echo "------"
 
 # Choose the Hard Disk 
 while true; do
