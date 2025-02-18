@@ -15,9 +15,12 @@ echo -e "${C}+++++++++++++++++ Laptop-Hibernation ++++++++++++++++++${X}"
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo""
 
-# Ask if the temporary file should be deleted
-echo -e "${Y}This script will add the required lines into 'logind.conf'${X}"
-echo -e "${Y}to use a PVE on a laptop without hibernation${X}"
+# Ask for continue script
+echo -e "${Y}This script will add the required lines into${X}"
+echo "-----"
+echo -e "${R}'logind.conf'${X}"
+echo -e "${R}to use a laptop as an PVE host${X}"
+echo "-----"
 echo ""
 echo -e "${Y}Run script now? (y/N)${X}"
 read run_script
