@@ -18,9 +18,9 @@ echo""
 # Ask for continue script
 echo -e "${Y}This script will add the required lines into${X}"
 echo "-----"
-echo -e "${R}'logind.conf'${X}"
-echo -e "${R}to use a laptop as an PVE host${X}"
+echo -e "${R}'/etc/systemd/logind.conf'${X}"
 echo "-----"
+echo -e "${Y}to use a laptop as an PVE host${X}"
 echo ""
 echo -e "${Y}Run script now? (y/N)${X}"
 read run_script
