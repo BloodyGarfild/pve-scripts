@@ -1,6 +1,7 @@
 #!/bin/bash
 TAB="  "
-TABS=" "
-INFO="${TABS}💡${TAB}${CL}"
-OK="${TABS}✅${TAB}${CL}"
-WARN="${TABS}⚠️${TAB}${CL}"
+INFO="${TAB}ℹ️${TAB}${CL}"
+OK="${TAB}✅${TAB}${CL}"
+NOTOK="${TAB}❌${TAB}${CL}"
+WARN="${TAB}⚠️${TAB}${CL}"
+DISK="${TAB}💾${TAB}${CL}"
