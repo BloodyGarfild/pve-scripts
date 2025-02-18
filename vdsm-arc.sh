@@ -17,7 +17,8 @@ echo""
 
 # Ask if the temporary file should be deleted
 echo -e "${Y}vDSM-Arc default settings (can changed after creation)${X}"
-echo -e "${Y}CPU: 2 Cores | Mem: 4096MB | Boot: SATA0 | NIC: vmbr0 ${X}"
+echo -e "${Y}CPU: 2 Cores | Mem: 4096MB | NIC: vmbr0 | Storage: local-lvm${X}"
+echo -e "${Y}vDSM-Arc will be mapped as SATA0 > Do not change this!${X}"
 echo ""
 echo -e "${Y}Run script now? (y/N)${X}"
 read run_script
@@ -149,7 +150,6 @@ read -n 1 option
 		a)
 			echo -e "${C}Virtual Hard Disk${X}"
 			echo ""
-			echo -e "${Y}You can add the Hard Disk in the PVE GUI:${X}"
 			echo -e "${Y}PVE > $VM_ID > Hardware > Add > Hard Disk (SATA1, SATA2,..)${X}"
 			;;
 		b)
