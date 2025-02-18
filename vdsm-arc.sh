@@ -22,7 +22,7 @@ echo -e "${Y}CPU: 2 Cores | Mem: 4096MB | NIC: vmbr0 | Storage: local-lvm${X}"
 echo -e "${R}vDSM-Arc will be mapped as SATA0 > Do not change this!${X}"
 echo "-----"
 echo ""
-echo -e "${Y}Run script now? (y/N)${X}"
+echo -e "${Y}${WARN}Run script now? (y/N)${X}"
 read run_script
 echo ""
 
