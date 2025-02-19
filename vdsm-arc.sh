@@ -1,7 +1,7 @@
 #!/bin/bash
 export LANG=en_US.UTF-8
 
-# Import Colors
+# Import Misc
 source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/misc/colors.sh)
 source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/misc/emojis.sh)
 
