@@ -18,7 +18,7 @@ echo""
 # Ask for continue script
 echo -e "${Y}vDSM-Arc default settings (can changed after creation)${X}"
 echo "-----"
-echo -e "${Y}CPU: 2 Cores | Mem: 4096MB | NIC: vmbr0 | Storage: local-lvm${X}"
+echo -e "${Y}CPU: 2 Cores | Mem: 4096MB | NIC: vmbr0 | Storage: selectable${X}"
 echo -e "${R}vDSM-Arc will be mapped as SATA0 > Do not change this!${X}"
 echo "-----"
 echo ""
@@ -29,11 +29,32 @@ echo ""
 if [[ "$run_script" =~ ^[Yy]$ ]]; then
 		echo -e "${G}${OK}Running...${X}"
   		echo ""
+		echo ""
     else
 		echo -e "${R}${NOTOK}Stopping...${X}"
+		echo ""
 		exit 1
 fi
 
+# Get all storage locations that support disk images
+STORAGES=$(pvesm status -content images | awk 'NR>1 {print $1}')
+
+# Check if storages exist
+if [ -z "$STORAGES" ]; then
+    echo -e "${R}${NOTOK}No storage locations found that support disk images.${X}"
+    exit 1
+fi
+
+# Display storage options
+echo -e "${G}${DISK}Please select the Storage:${X}"
+select STORAGE in $STORAGES; do
+    if [ -n "$STORAGE" ]; then
+        echo -e "${G}You selected: $STORAGE${X}"
+        break
+    else
+        echo -e "${R}Invalid selection. Please try again.${G}"
+    fi
+done
 
 # Check if 'unzip' and 'wget' are installed
 for pkg in unzip wget; do
@@ -83,7 +104,7 @@ fi
 # VM-ID and configuration
 VM_ID=$(pvesh get /cluster/nextid)
 VM_NAME="vDSM.Arc"
-STORAGE="local-lvm"
+STORAGE=$STORAGE
 CORES=2
 MEMORY=4096
 
@@ -104,8 +125,15 @@ fi
 # Import the renamed image without --format qcow2 (will default to raw!)
 qm importdisk "$VM_ID" "$NEW_IMG_FILE" "$STORAGE"
 
-# Set the imported image as SATA0
-qm set "$VM_ID" --sata0 "$STORAGE:vm-${VM_ID}-disk-0"
+# Check storage type
+STORAGE_TYPE=$(pvesm status | awk -v s="$STORAGE" '$1 == s {print $2}')
+
+# Set the correct disk format based on storage type
+if [ "$STORAGE" == "local-lvm" ]; then
+    qm set "$VM_ID" --sata0 "$STORAGE:vm-${VM_ID}-disk-0"
+else
+	qm set "$VM_ID" --sata0 "$STORAGE:$VM_ID/vm-$VM_ID-disk-0.raw"
+fi
 
 # Enable QEMU Agent
 qm set "$VM_ID" --agent enabled=1
@@ -119,6 +147,7 @@ qm set "$VM_ID" --ide0 none
 qm set "$VM_ID" --net0 virtio,bridge=vmbr0
 qm set "$VM_ID" --cdrom none
 
+# Clearing screen
 clear
 
 # Ask if the temporary file should be deleted
