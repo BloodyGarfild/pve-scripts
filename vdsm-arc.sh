@@ -256,6 +256,19 @@ read -n 1 option
 			echo -e "${C}${TAB}Show Physical Hard Disk${X}"
 			echo ""
 			
+			# Function to find the next available SATA port
+			find_available_sata_port() {
+			  for PORT in {1..5}; do
+				if ! qm config $VM_ID | grep -q "sata$PORT"; then
+				  echo "sata$PORT"
+				  return
+				fi
+			  done
+			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
+			}
+			
+			SATA_PORT=$(find_available_sata_port)
+			
 			# Available disks 
 			echo -e "${Y}Available disks by ID:${X}"
 			disks=$(ls /dev/disk/by-id/ | grep -E '^(ata|nvme|usb)' | grep -v 'part' | grep -v '_1$' | grep -v -E '[-][0-9]+:[0-9]+$' | grep -v '^nvme-eui')
@@ -279,7 +292,7 @@ read -n 1 option
 				echo -e "${Y}Copy & Paste this command into your PVE shell by your own risk!${X}"
 				echo -e "${Y}Customize sata1 to [1-6]!${X}"
 				echo ""
-				echo -e "${R}${INFO}qm set $VM_ID -sata1 /dev/disk/by-id/$DISK_ID${X}"
+				echo -e "${R}${INFO}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$DISK_ID${X}"
 				sleep 3
 			else
 				echo -e "${R}Invalid selection. No disk was selected.${X}"
