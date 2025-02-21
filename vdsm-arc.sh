@@ -18,7 +18,7 @@ echo""
 # Ask for continue script
 echo -e "${Y}vDSM-Arc default settings (can changed after creation)${X}"
 echo "-----"
-echo -e "${Y}CPU: 2 Cores | Mem: 4096MB | NIC: vmbr0 | Storage: selectable${X}"
+echo -e "${Y}CPU: 2x | Mem: 4096MB | NIC: vmbr0 | Storage: selectable${X}"
 echo -e "${R}vDSM-Arc will be mapped as SATA0 > Do not change this!${X}"
 echo "-----"
 echo ""
@@ -46,7 +46,7 @@ if [ -z "$STORAGES" ]; then
 fi
 
 # Display storage options
-echo -e "${G}${DISK}Please select the Storage:${X}"
+echo -e "${G}${DISK}Please select target Storage for Arc install (SATA0):${X}"
 select STORAGE in $STORAGES; do
     if [ -n "$STORAGE" ]; then
         echo -e "${G}You selected: $STORAGE${X}"
@@ -127,9 +127,10 @@ qm importdisk "$VM_ID" "$NEW_IMG_FILE" "$STORAGE"
 
 # Check storage type
 STORAGE_TYPE=$(pvesm status | awk -v s="$STORAGE" '$1 == s {print $2}')
+echo -e "$STORAGE_TYPE"
 
 # Set the correct disk format based on storage type
-if [ "$STORAGE" == "local-lvm" ]; then
+if [ "$STORAGE_TYPE" == "lvmthin" ]; then
     qm set "$VM_ID" --sata0 "$STORAGE:vm-${VM_ID}-disk-0"
 else
 	qm set "$VM_ID" --sata0 "$STORAGE:$VM_ID/vm-$VM_ID-disk-0.raw"
@@ -146,8 +147,9 @@ qm set "$VM_ID" --bootdisk sata0
 qm set "$VM_ID" --ide0 none
 qm set "$VM_ID" --net0 virtio,bridge=vmbr0
 qm set "$VM_ID" --cdrom none
+qm set "$VM_ID" --delete ide0
+qm set "$VM_ID" --delete ide2
 
-# Clearing screen
 clear
 
 # Ask if the temporary file should be deleted
@@ -172,25 +174,119 @@ echo "------"
 # Choose the Hard Disk 
 while true; do
 echo ""
-echo -e "${Y}${DISK}Choose your option:${X}"
-echo -e "${C}a) Virtual Hard Disk${X}"
-echo -e "${C}b) Physical Hard Disk${X}"
+echo -e "${Y}${DISK} Choose your option:${X}"
+echo -e "${C}a) Create Virtual Hard Disk${X}"
+echo -e "${C}b) Show Physical Hard Disk${X}"
 echo -e "${R}c) Exit${X}"
 read -n 1 option
 
 	case "$option" in
 		a)
-			echo -e "${C}${TAB}Virtual Hard Disk${X}"
+			echo -e "${C}${TAB}Create Virtual Hard Disk${X}"
 			echo ""
-			echo -e "${Y}${INFO}PVE > $VM_ID > Hardware > Add > Hard Disk (SATA1, SATA2,..)${X}"
+			
+			# Retrieve all storage locations that support disk images
+			VM_DISKS=$(pvesm status -content images | awk 'NR>1 {print $1}')
+
+			# Check if storage locations are available
+			if [ -z "$VM_DISKS" ]; then
+			  echo -e "${R}No storage locations found that support disk images.${X}"
+			  continue
+			fi
+
+			# Display storage options
+			echo -e "${Y}Available target location for Virtual Disk:${X}"
+			select VM_DISK in $VM_DISKS; do
+			  if [ -n "$VM_DISK" ]; then
+				echo -e "${G}You have selected: $VM_DISK${X}"
+				break
+			  else
+				echo -e "${R}Invalid selection. Please try again.${X}"
+			  fi
+			done
+			
+			# Function to find the next available SATA port
+			find_available_sata_port() {
+			  for PORT in {1..5}; do
+				if ! qm config $VM_ID | grep -q "sata$PORT"; then
+				  echo "sata$PORT"
+				  return
+				fi
+			  done
+			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
+			}
+
+			# Check the storage type
+			VM_DISK_TYPE=$(pvesm status | awk -v s="$VM_DISK" '$1 == s {print $2}')
+			echo "Storage type: $VM_DISK_TYPE"
+
+			# Ask for disk size (at least 32 GB)
+			read -p "Enter the disk size in GB (minimum 32 GB): " DISK_SIZE
+
+			if [[ ! "$DISK_SIZE" =~ ^[0-9]+$ ]] || [ "$DISK_SIZE" -lt 32 ]; then
+			  echo -e "${R}Invalid input. The disk size must be a number and at least 32 GB.${X}"
+			  continue
+			fi
+
+			SATA_PORT=$(find_available_sata_port)
+			DISK_NAME="vm-$VM_ID-disk-$SATA_PORT"
+
+			# Create the full path to the disk
+			if [ "$VM_DISK_TYPE" == "lvmthin" ]; then
+			  DISK_PATH="$VM_DISK:$DISK_SIZE"  # Correct path for lvmthin
+			elif [ "$VM_DISK_TYPE" == "dir" ]; then  
+			  DISK_PATH="$VM_DISK:$DISK_SIZE,format=qcow2"  # Correct syntax for dir storage
+			else
+			  echo -e "${R}Unsupported storage type: $VM_DISK_TYPE${X}"
+			  continue
+			fi
+
+			# Create and assign the disk (format is only used for types other than lvmthin)
+			if [ "$VM_DISK_TYPE" == "lvmthin" ]; then
+			  qm set "$VM_ID" -${SATA_PORT} "$DISK_PATH"  # No format for lvmthin!
+			else
+			  qm set "$VM_ID" -$SATA_PORT "$DISK_PATH"
+			fi
+
+			echo -e "${G}${OK}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
+
+			
 			;;
 		b)
-			echo -e "${C}${TAB}Physical Hard Disk${X}"
-			ls -l /dev/disk/by-id
+			echo -e "${C}${TAB}Show Physical Hard Disk${X}"
 			echo ""
-			echo -e "${C}Search for the disk you want to use...${X}"
-			echo -e "${C}Edit the following line and run in PVE shell:${X}"
-			echo -e "${Y}${INFO} qm set $VM_ID -sata1 /dev/disk/by-id/ata-Samsung_SSD_870_QVO_8TB_XXSERIALNRXXX${X}"
+			
+			# Available disks 
+			echo -e "${Y}Available disks by ID:${X}"
+			disks=$(ls /dev/disk/by-id/ | grep -E '^(ata|nvme|usb)' | grep -v 'part' | grep -v '_1$' | grep -v -E '[-][0-9]+:[0-9]+$' | grep -v '^nvme-eui')
+
+			counter=1
+			for disk in $disks; do
+				echo -e "${C}$counter) $disk${X}"
+				counter=$((counter+1))
+			done
+
+			# Prompt the user to choose a disk
+			echo -n "#? "
+			read selection
+
+			# Check if the selection is valid
+			DISK_ID=$(echo $disks | awk -v idx=$selection '{print $idx}')
+
+			if [ -n "$DISK_ID" ]; then
+				echo ""
+				echo -e "${Y}You have selected $DISK_ID.${X}"
+				echo -e "${Y}Copy & Paste this command into your PVE shell by your own risk!${X}"
+				echo -e "${Y}Customize sata1 to [1-6]!${X}"
+				echo ""
+				echo -e "${R}${INFO}qm set $VM_ID -sata1 /dev/disk/by-id/$DISK_ID${X}"
+				sleep 3
+			else
+				echo -e "${R}Invalid selection. No disk was selected.${X}"
+			fi
+			
+			
+			
 			;;
 		c)
 			echo -e "${C}${OK}Exiting the script.${X}"
