@@ -15,7 +15,7 @@ echo -e "${C}++++++++++++++++++ vDSM-Arc-Installer +++++++++++++++++++${X}"
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo""
 
-# Ask for continue script
+# Continue Script?
 echo -e "${Y}vDSM-Arc default settings (can changed after creation)${X}"
 echo "-----"
 echo -e "${Y}CPU: 2x | Mem: 4096MB | NIC: vmbr0 | Storage: selectable${X}"
@@ -36,7 +36,7 @@ if [[ "$run_script" =~ ^[Yy]$ ]]; then
 		exit 1
 fi
 
-# Get all storage locations that support disk images
+# Storage locations > support images
 STORAGES=$(pvesm status -content images | awk 'NR>1 {print $1}')
 
 # Check if storages exist
@@ -45,7 +45,7 @@ if [ -z "$STORAGES" ]; then
     exit 1
 fi
 
-# Display storage options
+# Storage Options
 echo -e "${G}${DISK}Please select target Storage for Arc install (SATA0):${X}"
 select STORAGE in $STORAGES; do
     if [ -n "$STORAGE" ]; then
@@ -56,7 +56,7 @@ select STORAGE in $STORAGES; do
     fi
 done
 
-# Check if 'unzip' and 'wget' are installed
+# Check for 'unzip' and 'wget' > install if not
 for pkg in unzip wget; do
     if ! command -v "$pkg" &> /dev/null; then
         echo -e "${Y}'$pkg' is not installed. Installing...${X}"
@@ -74,7 +74,7 @@ DOWNLOAD_PATH="/var/lib/vz/template/tmp"
 
 mkdir -p "$DOWNLOAD_PATH"
 
-# Retrieve the latest .img.zip from GitHub
+# Latest .img.zip from GitHub
 LATEST_RELEASE_URL=$(curl -s https://api.github.com/repos/AuxXxilium/arc/releases/latest | grep "browser_download_url" | grep ".img.zip" | cut -d '"' -f 4)
 LATEST_FILENAME=$(basename "$LATEST_RELEASE_URL")
 
@@ -92,7 +92,7 @@ unzip -o "$DOWNLOAD_PATH/$LATEST_FILENAME" -d "$ISO_STORAGE_PATH"
 # Extract the version number from the filename
 VERSION=$(echo "$LATEST_FILENAME" | grep -oP "\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?")
 
-# Rename the extracted arc.img to arc-[VERSION].img
+# Rename arc.img to arc-[VERSION].img
 if [ -f "$ISO_STORAGE_PATH/arc.img" ]; then
     NEW_IMG_FILE="$ISO_STORAGE_PATH/arc-${VERSION}.img"
     mv "$ISO_STORAGE_PATH/arc.img" "$NEW_IMG_FILE"
@@ -107,11 +107,9 @@ VM_NAME="vDSM.Arc"
 STORAGE=$STORAGE
 CORES=2
 MEMORY=4096
+Q35_VERSION="pc-q35-8.0"  
 
-# Retrieve Proxmox version to set the correct q35 version
-Q35_VERSION="pc-q35-8.0"  # Change as needed for the correct Proxmox version!
-
-# Create the VM with q35 as the machine type
+# Create the VM 
 qm create "$VM_ID" --name "$VM_NAME" --memory "$MEMORY" --cores "$CORES" --net0 virtio,bridge=vmbr0 --machine "$Q35_VERSION"
 
 # Set VirtIO-SCSI as the default controller
@@ -122,18 +120,18 @@ if qm config "$VM_ID" | grep -q "scsi0"; then
     qm set "$VM_ID" --delete scsi0
 fi
 
-# Import the renamed image without --format qcow2 (will default to raw!)
+# Import image
 qm importdisk "$VM_ID" "$NEW_IMG_FILE" "$STORAGE"
 
 # Check storage type
 STORAGE_TYPE=$(pvesm status | awk -v s="$STORAGE" '$1 == s {print $2}')
 echo -e "$STORAGE_TYPE"
 
-# Set the correct disk format based on storage type
-if [ "$STORAGE_TYPE" == "lvmthin" ]; then
-    qm set "$VM_ID" --sata0 "$STORAGE:vm-${VM_ID}-disk-0"
+# Disk format > block/file based
+if [[ "$STORAGE_TYPE" == "dir" || "$STORAGE_TYPE" == "nfs" || "$STORAGE_TYPE" == "cifs" || "$STORAGE_TYPE" == "btrfs" ]]; then
+    qm set "$VM_ID" --sata0 "$STORAGE:$VM_ID/vm-$VM_ID-disk-0.raw" # file-based 
 else
-	qm set "$VM_ID" --sata0 "$STORAGE:$VM_ID/vm-$VM_ID-disk-0.raw"
+	qm set "$VM_ID" --sata0 "$STORAGE:vm-${VM_ID}-disk-0" # block-based 
 fi
 
 # Enable QEMU Agent
@@ -152,7 +150,8 @@ qm set "$VM_ID" --delete ide2
 
 clear
 
-# Ask if the temporary file should be deleted
+# Delete temp file?
+echo ""
 echo -e "${Y}${WARN} Do you want to delete the temp downloaded file ($LATEST_FILENAME) from $DOWNLOAD_PATH? (y/N): ${X}"
 read delete_answer
 echo ""
@@ -165,7 +164,7 @@ else
     echo -e "${Y}${NOTOK}($LATEST_FILENAME) from '$DOWNLOAD_PATH' was not deleted.${X}"
 fi
 
-# Success
+# Success message
 echo "------"
 echo -e "${G}${OK} VM $VM_NAME (ID: $VM_ID) has been successfully created!${X}"
 echo -e "${G}${OK} SATA0: Imported image (${NEW_IMG_FILE})${X}"
@@ -185,10 +184,10 @@ read -n 1 option
 			echo -e "${C}${TAB}Create Virtual Hard Disk${X}"
 			echo ""
 			
-			# Retrieve all storage locations that support disk images
+			# Storage locations > Disk images
 			VM_DISKS=$(pvesm status -content images | awk 'NR>1 {print $1}')
 
-			# Check if storage locations are available
+			# Check availability
 			if [ -z "$VM_DISKS" ]; then
 			  echo -e "${R}No storage locations found that support disk images.${X}"
 			  continue
@@ -196,16 +195,20 @@ read -n 1 option
 
 			# Display storage options
 			echo -e "${Y}Available target location for Virtual Disk:${X}"
-			select VM_DISK in $VM_DISKS; do
-			  if [ -n "$VM_DISK" ]; then
+			select VM_DISK in $VM_DISKS "Exit"; do
+			  if [ "$VM_DISK" == "Exit" ]; then
+				echo -e "${G}${OK}Back 2 Menu...${X}"
+				continue 2
+			  elif [ -n "$VM_DISK" ]; then
 				echo -e "${G}You have selected: $VM_DISK${X}"
 				break
 			  else
 				echo -e "${R}Invalid selection. Please try again.${X}"
 			  fi
 			done
+
 			
-			# Function to find the next available SATA port
+			# Next available SATA-Port
 			find_available_sata_port() {
 			  for PORT in {1..5}; do
 				if ! qm config $VM_ID | grep -q "sata$PORT"; then
@@ -216,7 +219,7 @@ read -n 1 option
 			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
 			}
 
-			# Check the storage type
+			# Check Storage type
 			VM_DISK_TYPE=$(pvesm status | awk -v s="$VM_DISK" '$1 == s {print $2}')
 			echo "Storage type: $VM_DISK_TYPE"
 
@@ -231,23 +234,18 @@ read -n 1 option
 			SATA_PORT=$(find_available_sata_port)
 			DISK_NAME="vm-$VM_ID-disk-$SATA_PORT"
 
-			# Create the full path to the disk
-			if [ "$VM_DISK_TYPE" == "lvmthin" ]; then
-			  DISK_PATH="$VM_DISK:$DISK_SIZE"  # Correct path for lvmthin
-			elif [ "$VM_DISK_TYPE" == "dir" ]; then  
-			  DISK_PATH="$VM_DISK:$DISK_SIZE,format=qcow2"  # Correct syntax for dir storage
-			else
-			  echo -e "${R}Unsupported storage type: $VM_DISK_TYPE${X}"
-			  continue
-			fi
-
-			# Create and assign the disk (format is only used for types other than lvmthin)
-			if [ "$VM_DISK_TYPE" == "lvmthin" ]; then
-			  qm set "$VM_ID" -${SATA_PORT} "$DISK_PATH"  # No format for lvmthin!
-			else
+			# Generate disk path > block/file based
+			if [[ "$VM_DISK_TYPE" == "dir" || "$VM_DISK_TYPE" == "nfs" || "$VM_DISK_TYPE" == "cifs" || "$STORAGE_TYPE" == "btrfs" ]]; then 
+			  DISK_PATH="$VM_DISK:$DISK_SIZE,format=qcow2"  # Path for dir, nfs, cifs, btrfs
+			  sleep 1
 			  qm set "$VM_ID" -$SATA_PORT "$DISK_PATH"
+			else
+			  DISK_PATH="$VM_DISK:$DISK_SIZE"  # Path for lvmthin, zfspool,..
+			  sleep 1
+			  qm set "$VM_ID" -${SATA_PORT} "$DISK_PATH"  
 			fi
-
+			
+			echo ""
 			echo -e "${G}${OK}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
 
 			
@@ -256,7 +254,7 @@ read -n 1 option
 			echo -e "${C}${TAB}Show Physical Hard Disk${X}"
 			echo ""
 			
-			# Function to find the next available SATA port
+			# Next available SATA-Port
 			find_available_sata_port() {
 			  for PORT in {1..5}; do
 				if ! qm config $VM_ID | grep -q "sata$PORT"; then
@@ -268,41 +266,52 @@ read -n 1 option
 			}
 			
 			SATA_PORT=$(find_available_sata_port)
-			
-			# Available disks 
-			echo -e "${Y}Available disks by ID:${X}"
-			disks=$(ls /dev/disk/by-id/ | grep -E '^(ata|nvme|usb)' | grep -v 'part' | grep -v '_1$' | grep -v -E '[-][0-9]+:[0-9]+$' | grep -v '^nvme-eui')
+			DISKS=$(find /dev/disk/by-id/ -type l -print0 | xargs -0 ls -l | grep -v -E '[0-9]$' | awk -F' -> ' '{print $1}' | awk -F'/by-id/' '{print $2}')
+			DISK_ARRAY=($(echo "$DISKS"))
 
-			counter=1
-			for disk in $disks; do
-				echo -e "${C}$counter) $disk${X}"
-				counter=$((counter+1))
+			# Display the disk options with numbers
+			echo -e "${Y}Select a physical disk:${X}"
+			for i in "${!DISK_ARRAY[@]}"; do
+			  echo "$((i + 1))) ${DISK_ARRAY[i]}"
 			done
+			echo "0) Exit"
 
-			# Prompt the user to choose a disk
-			echo -n "#? "
-			read selection
+			read -p "#? " SELECTION
 
-			# Check if the selection is valid
-			DISK_ID=$(echo $disks | awk -v idx=$selection '{print $idx}')
-
-			if [ -n "$DISK_ID" ]; then
-				echo ""
-				echo -e "${Y}You have selected $DISK_ID.${X}"
-				echo -e "${Y}Copy & Paste this command into your PVE shell by your own risk!${X}"
-				echo -e "${Y}Customize sata1 to [1-6]!${X}"
-				echo ""
-				echo -e "${R}${INFO}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$DISK_ID${X}"
-				sleep 3
-			else
-				echo -e "${R}Invalid selection. No disk was selected.${X}"
+			# Input check
+			if ! [[ "$SELECTION" =~ ^[0-9]+$ ]]; then
+			  echo ""
+			  echo -e "${Y}${WARN}Invalid input. Please enter a number.${X}"
+			  continue 2
 			fi
+
+			# Validating
+			if [[ "$SELECTION" -eq 0 ]]; then
+			  echo ""
+			  echo -e "${G}${OK}Back 2 Menu...${X}"
+			  continue 2
+			elif [[ "$SELECTION" -ge 1 && "$SELECTION" -le "${#DISK_ARRAY[@]}" ]]; then
+			  SELECTED_DISK="${DISK_ARRAY[$((SELECTION - 1))]}"
+			else
+			  echo ""
+			  echo -e "${Y}${WARN}Invalid selection.${X}"
+			  continue 2
+			fi
+			
+			echo ""
+				echo -e "${Y}You have selected $SELECTED_DISK.${X}"
+				echo -e "${Y}${WARN}Copy & Paste this command into your PVE shell ${R}by your own risk!${X}"
+				echo "-----------"
+				echo -e "${C}${TAB}${START}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK${X}"
+				echo "-----------"
+				sleep 3
 			
 			
 			
 			;;
 		c)
 			echo -e "${C}${OK}Exiting the script.${X}"
+			echo ""
 			exit 0
 			;;
 		*)
@@ -310,4 +319,3 @@ read -n 1 option
 			;;
 	esac
 done
-
