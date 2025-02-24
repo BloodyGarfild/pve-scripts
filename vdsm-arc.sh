@@ -80,6 +80,7 @@ LATEST_FILENAME=$(basename "$LATEST_RELEASE_URL")
 
 if [ -f "$DOWNLOAD_PATH/$LATEST_FILENAME" ]; then
     echo -e "${G}The latest file ($LATEST_FILENAME) is already present. Skipping download.${X}"
+	echo -e "${G}Skipping download...${X}"
 else
     echo -e "${G}Downloading the latest file ($LATEST_FILENAME)...${X}"
     wget -O "$DOWNLOAD_PATH/$LATEST_FILENAME" "$LATEST_RELEASE_URL"
