@@ -16,7 +16,7 @@ echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo""
 
 # Continue Script?
-echo -e "${Y}vDSM-Arc default settings (can changed after creation)${X}"
+echo -e "${Y}vDSM-Arc default settings (can be changed after creation)${X}"
 echo "-----"
 echo -e "${Y}CPU: 2x | Mem: 4096MB | NIC: vmbr0 | Storage: selectable${X}"
 echo -e "${R}vDSM-Arc will be mapped as SATA0 > Do not change this!${X}"
@@ -238,11 +238,11 @@ read -n 1 option
 			if [[ "$VM_DISK_TYPE" == "dir" || "$VM_DISK_TYPE" == "nfs" || "$VM_DISK_TYPE" == "cifs" || "$STORAGE_TYPE" == "btrfs" ]]; then 
 			  DISK_PATH="$VM_DISK:$DISK_SIZE,format=qcow2"  # Path for dir, nfs, cifs, btrfs
 			  sleep 1
-			  qm set "$VM_ID" -$SATA_PORT "$DISK_PATH"
+			  qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
 			else
 			  DISK_PATH="$VM_DISK:$DISK_SIZE"  # Path for lvmthin, zfspool,..
 			  sleep 1
-			  qm set "$VM_ID" -${SATA_PORT} "$DISK_PATH"  
+			  qm set "$VM_ID" -${SATA_PORT} "$DISK_PATH",backup=0
 			fi
 			
 			echo ""
