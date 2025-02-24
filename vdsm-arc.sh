@@ -79,7 +79,7 @@ LATEST_RELEASE_URL=$(curl -s https://api.github.com/repos/AuxXxilium/arc/release
 LATEST_FILENAME=$(basename "$LATEST_RELEASE_URL")
 
 if [ -f "$DOWNLOAD_PATH/$LATEST_FILENAME" ]; then
-    echo -e "${G}The latest file ($LATEST_FILENAME) is already present. Skipping download.${X}"
+    echo -e "${G}The latest file ($LATEST_FILENAME) is already present.${X}"
 	echo -e "${G}Skipping download...${X}"
 else
     echo -e "${G}Downloading the latest file ($LATEST_FILENAME)...${X}"
