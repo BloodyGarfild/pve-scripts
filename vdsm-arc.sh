@@ -79,7 +79,8 @@ LATEST_RELEASE_URL=$(curl -s https://api.github.com/repos/AuxXxilium/arc/release
 LATEST_FILENAME=$(basename "$LATEST_RELEASE_URL")
 
 if [ -f "$DOWNLOAD_PATH/$LATEST_FILENAME" ]; then
-    echo -e "${G}The latest file ($LATEST_FILENAME) is already present. Skipping download.${X}"
+    echo -e "${G}The latest file ($LATEST_FILENAME) is already present.${X}"
+	echo -e "${G}Skipping download...${X}"
 else
     echo -e "${G}Downloading the latest file ($LATEST_FILENAME)...${X}"
     wget -O "$DOWNLOAD_PATH/$LATEST_FILENAME" "$LATEST_RELEASE_URL"
@@ -235,7 +236,7 @@ read -n 1 option
 			DISK_NAME="vm-$VM_ID-disk-$SATA_PORT"
 
 			# Generate disk path > block/file based
-			if [[ "$VM_DISK_TYPE" == "dir" || "$VM_DISK_TYPE" == "nfs" || "$VM_DISK_TYPE" == "cifs" || "$STORAGE_TYPE" == "btrfs" ]]; then 
+			if [[ "$VM_DISK_TYPE" == "dir" || "$VM_DISK_TYPE" == "nfs" || "$VM_DISK_TYPE" == "cifs" || "$VM_DISK_TYPE" == "btrfs" ]]; then 
 			  DISK_PATH="$VM_DISK:$DISK_SIZE,format=qcow2"  # Path for dir, nfs, cifs, btrfs
 			  sleep 1
 			  qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
