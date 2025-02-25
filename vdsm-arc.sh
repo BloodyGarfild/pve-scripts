@@ -243,7 +243,7 @@ read -n 1 option
 			else
 			  DISK_PATH="$VM_DISK:$DISK_SIZE"  # Path for lvmthin, zfspool,..
 			  sleep 1
-			  qm set "$VM_ID" -${SATA_PORT} "$DISK_PATH",backup=0
+			  qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
 			fi
 			
 			echo ""
