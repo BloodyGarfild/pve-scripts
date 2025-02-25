@@ -181,7 +181,7 @@ echo -e "${R}c) Exit${X}"
 read -n 1 option
 
 	case "$option" in
-		a)
+		a) #Virtual Disk
 			echo -e "${C}${TAB}Create Virtual Hard Disk${X}"
 			echo ""
 			
@@ -248,10 +248,8 @@ read -n 1 option
 			
 			echo ""
 			echo -e "${G}${OK}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
-
-			
 			;;
-		b)
+		b) #Physical Disk
 			echo -e "${C}${TAB}Show Physical Hard Disk${X}"
 			echo ""
 			
@@ -306,16 +304,13 @@ read -n 1 option
 				echo -e "${C}${TAB}${START}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK${X}"
 				echo "-----------"
 				sleep 3
-			
-			
-			
 			;;
-		c)
+		c) # Exit
 			echo -e "${C}${OK}Exiting the script.${X}"
 			echo ""
 			exit 0
 			;;
-		*)
+		*) # False selection
 			echo -e "${R}${WARN}Invalid input. Please choose 'a' | 'b' | 'c'.${X}"
 			;;
 	esac
