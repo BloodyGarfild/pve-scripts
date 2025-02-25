@@ -9,7 +9,7 @@ bash -c "$(wget -qLO - https://raw.githubusercontent.com/And-rix/pve-scripts/ref
 This script will install the Arc Loader (vDSM) from AuxXxilium Tech on your PVE host
 
 
-## laptop-hibernation.sh
+## ==laptop-hibernation.sh==
 ```shell
 bash -c "$(wget -qLO - https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/laptop-hibernation.sh)"
 ```
