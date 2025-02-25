@@ -9,11 +9,11 @@ source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/head
 clear
 
 # Post message
-echo""
+echo ""
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo -e "${C}++++++++++++++++++ vDSM-Arc-Installer +++++++++++++++++++${X}"
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
-echo""
+echo ""
 
 # Continue Script?
 echo -e "${Y}vDSM-Arc default settings (can be changed after creation)${X}"
