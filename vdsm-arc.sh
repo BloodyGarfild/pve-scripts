@@ -9,11 +9,11 @@ source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/head
 clear
 
 # Post message
-echo ""
+echo""
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo -e "${C}++++++++++++++++++ vDSM-Arc-Installer +++++++++++++++++++${X}"
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
-echo ""
+echo""
 
 # Continue Script?
 echo -e "${Y}vDSM-Arc default settings (can be changed after creation)${X}"
@@ -79,8 +79,7 @@ LATEST_RELEASE_URL=$(curl -s https://api.github.com/repos/AuxXxilium/arc/release
 LATEST_FILENAME=$(basename "$LATEST_RELEASE_URL")
 
 if [ -f "$DOWNLOAD_PATH/$LATEST_FILENAME" ]; then
-    echo -e "${G}The latest file ($LATEST_FILENAME) is already present.${X}"
-	echo -e "${G}Skipping download...${X}"
+    echo -e "${G}The latest file ($LATEST_FILENAME) is already present. Skipping download.${X}"
 else
     echo -e "${G}Downloading the latest file ($LATEST_FILENAME)...${X}"
     wget -O "$DOWNLOAD_PATH/$LATEST_FILENAME" "$LATEST_RELEASE_URL"
