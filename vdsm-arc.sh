@@ -67,7 +67,7 @@ for pkg in unzip wget; do
         fi
     fi
 done
-
+ 
 # Target directories
 ISO_STORAGE_PATH="/var/lib/vz/template/iso"
 DOWNLOAD_PATH="/var/lib/vz/template/tmp"
