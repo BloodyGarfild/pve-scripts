@@ -1,4 +1,12 @@
 #!/bin/bash
+
+# Script Name: vdsm-arc-disk-update.sh
+# Description: Script to add Storages to an existing VM
+# Author: And-rix (https://github.com/And-rix)
+# Version: v1.0
+# Creation: 26.02.2025
+# Modified: 26.02.2025 (v1.0)
+
 export LANG=en_US.UTF-8
 
 # Import Misc
