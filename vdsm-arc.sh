@@ -22,7 +22,7 @@ echo -e "${Y}CPU: 2x | Mem: 4096MB | NIC: vmbr0 | Storage: selectable${X}"
 echo -e "${R}vDSM-Arc will be mapped as SATA0 > Do not change this!${X}"
 echo "-----"
 echo ""
-echo -e "${Y}${INFO}Run script now? (y/N)${X}"
+echo -e "${Y}${INFO}Run script now? (y/Y)${X}"
 read run_script
 echo ""
 
@@ -153,7 +153,7 @@ clear
 
 # Delete temp file?
 echo ""
-echo -e "${Y}${WARN} Do you want to delete the temp downloaded file ($LATEST_FILENAME) from $DOWNLOAD_PATH? (y/N): ${X}"
+echo -e "${Y}${WARN} Do you want to delete the temp downloaded file ($LATEST_FILENAME) from $DOWNLOAD_PATH? (y/Y): ${X}"
 read delete_answer
 echo ""
 
