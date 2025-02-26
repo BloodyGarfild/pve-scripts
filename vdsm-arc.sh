@@ -171,9 +171,10 @@ echo -e "${G}${OK} VM $VM_NAME (ID: $VM_ID) has been successfully created!${X}"
 echo -e "${G}${OK} SATA0: Imported image (${NEW_IMG_FILE})${X}"
 echo "------"
 
-# Function available SATA port
+# Selection menu / Precheck
 while true; do
-	find_available_sata_port() {
+	# Function available SATA port
+	precheck_sata_port() {
 		for PORT in {1..5}; do
 			if ! qm config $VM_ID | grep -q "sata$PORT"; then
 				echo "sata$PORT"
@@ -183,26 +184,24 @@ while true; do
 		echo ""  
 	}
 
-# Check available SATA port before proceeding
-	SATA_PORT=$(find_available_sata_port)
+	# Check available SATA port before proceeding
+	PRE_SATA_PORT=$(precheck_sata_port)
 
-	if [[ -z "$SATA_PORT" ]]; then
+	if [[ -z "$PRE_SATA_PORT" ]]; then
 		echo ""
 		echo -e "${R}${NOTOK}No available SATA ports between SATA1 and SATA5. Exiting...${X}"
-		echo ""
 		exit 1  
 	fi
+	
+    echo ""
+    echo -e "${Y}${DISK} Choose your option:${X}"
+    echo -e "${C}a) Create Virtual Hard Disk${X}"
+    echo -e "${C}b) Show Physical Hard Disk${X}"
+    echo -e "${R}c) Exit${X}"
+    read -n 1 option
 
-# Choose the Hard Disk 
-echo ""
-echo -e "${Y}${DISK} Choose your option:${X}"
-echo -e "${C}a) Create Virtual Hard Disk${X}"
-echo -e "${C}b) Show Physical Hard Disk${X}"
-echo -e "${R}c) Exit${X}"
-read -n 1 option
-
-	case "$option" in
-		a) #Virtual Disk
+    case "$option" in
+        a) #Virtual Disk
 			echo -e "${C}${TAB}Create Virtual Hard Disk${X}"
 			echo ""
 			
@@ -229,6 +228,18 @@ read -n 1 option
 			  fi
 			done
 
+			
+			# Next available SATA-Port
+			find_available_sata_port() {
+			  for PORT in {1..5}; do
+				if ! qm config $VM_ID | grep -q "sata$PORT"; then
+				  echo "sata$PORT"
+				  return
+				fi
+			  done
+			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
+			}
+
 			# Check Storage type
 			VM_DISK_TYPE=$(pvesm status | awk -v s="$VM_DISK" '$1 == s {print $2}')
 			echo "Storage type: $VM_DISK_TYPE"
@@ -241,6 +252,7 @@ read -n 1 option
 			  continue
 			fi
 
+			SATA_PORT=$(find_available_sata_port)
 			DISK_NAME="vm-$VM_ID-disk-$SATA_PORT"
 
 			# Generate disk path > block/file based
@@ -262,7 +274,7 @@ read -n 1 option
 			echo ""
 			
 			# Next available SATA-Port
-			find_available_sata_port_physical() {
+			find_available_sata_port() {
 			  for PORT in {1..5}; do
 				if ! qm config $VM_ID | grep -q "sata$PORT"; then
 				  echo "sata$PORT"
@@ -272,8 +284,7 @@ read -n 1 option
 			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
 			}
 			
-			SATA_PORT_PHYSICAL=$(find_available_sata_port_physical)
-						
+			SATA_PORT=$(find_available_sata_port)
 			DISKS=$(find /dev/disk/by-id/ -type l -print0 | xargs -0 ls -l | grep -v -E '[0-9]$' | awk -F' -> ' '{print $1}' | awk -F'/by-id/' '{print $2}')
 			DISK_ARRAY=($(echo "$DISKS"))
 
@@ -310,17 +321,17 @@ read -n 1 option
 				echo -e "${Y}You have selected $SELECTED_DISK.${X}"
 				echo -e "${Y}${WARN}Copy & Paste this command into your PVE shell ${R}by your own risk!${X}"
 				echo "-----------"
-				echo -e "${C}${TAB}${START}qm set $VM_ID -$SATA_PORT_PHYSICAL /dev/disk/by-id/$SELECTED_DISK${X}"
+				echo -e "${C}${TAB}${START}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK${X}"
 				echo "-----------"
 				sleep 3
 			;;
-		c) # Exit
-			echo -e "${C}${OK}Exiting the script.${X}"
-			echo ""
-			exit 0
-			;;
-		*) # False selection
-			echo -e "${R}${WARN}Invalid input. Please choose 'a' | 'b' | 'c'.${X}"
-			;;
-	esac
+        c) # Exit
+            echo -e "${C}${OK}Exiting the script.${X}"
+            echo ""
+            exit 0
+            ;;
+        *) # False selection
+            echo -e "${R}${WARN}Invalid input. Please choose 'a' | 'b' | 'c'.${X}"
+            ;;
+    esac
 done

@@ -71,28 +71,28 @@ while true; do
     fi
 done
 
-# Function available SATA port
-find_available_sata_port() {
-    for PORT in {1..5}; do
-        if ! qm config $VM_ID | grep -q "sata$PORT"; then
-            echo "sata$PORT"
-            return
-        fi
-    done
-    echo ""  
-}
-
-# Check available SATA port before proceeding
-SATA_PORT=$(find_available_sata_port)
-
-if [[ -z "$SATA_PORT" ]]; then
-	echo ""
-    echo -e "${R}${NOTOK}No available SATA ports between SATA1 and SATA5. Exiting...${X}"
-    exit 1  
-fi
-
-# Selection menu
+# Selection menu / Precheck
 while true; do
+	# Function available SATA port
+	precheck_sata_port() {
+		for PORT in {1..5}; do
+			if ! qm config $VM_ID | grep -q "sata$PORT"; then
+				echo "sata$PORT"
+				return
+			fi
+		done
+		echo ""  
+	}
+
+	# Check available SATA port before proceeding
+	PRE_SATA_PORT=$(precheck_sata_port)
+
+	if [[ -z "$PRE_SATA_PORT" ]]; then
+		echo ""
+		echo -e "${R}${NOTOK}No available SATA ports between SATA1 and SATA5. Exiting...${X}"
+		exit 1  
+	fi
+	
     echo ""
     echo -e "${Y}${DISK} Choose your option:${X}"
     echo -e "${C}a) Create Virtual Hard Disk${X}"
@@ -101,67 +101,80 @@ while true; do
     read -n 1 option
 
     case "$option" in
-        a) # Virtual Disk
-            echo -e "${C}${TAB}Create Virtual Hard Disk${X}"
-            echo ""
-            
-            # Storage locations > Disk images
-            VM_DISKS=$(pvesm status -content images | awk 'NR>1 {print $1}')
+        a) #Virtual Disk
+			echo -e "${C}${TAB}Create Virtual Hard Disk${X}"
+			echo ""
+			
+			# Storage locations > Disk images
+			VM_DISKS=$(pvesm status -content images | awk 'NR>1 {print $1}')
 
-            # Check availability
-            if [ -z "$VM_DISKS" ]; then
-                echo -e "${R}No storage locations found that support disk images.${X}"
-                continue
-            fi
+			# Check availability
+			if [ -z "$VM_DISKS" ]; then
+			  echo -e "${R}No storage locations found that support disk images.${X}"
+			  continue
+			fi
 
-            # Display storage options
-            echo -e "${Y}Available target location for Virtual Disk:${X}"
-            select VM_DISK in $VM_DISKS "Exit"; do
-                if [ "$VM_DISK" == "Exit" ]; then
-                    echo -e "${G}${OK}Back to Menu...${X}"
-                    continue 2
-                elif [ -n "$VM_DISK" ]; then
-                    echo -e "${G}You have selected: $VM_DISK${X}"
-                    break
-                else
-                    echo -e "${R}Invalid selection. Please try again.${X}"
-                fi
-            done
+			# Display storage options
+			echo -e "${Y}Available target location for Virtual Disk:${X}"
+			select VM_DISK in $VM_DISKS "Exit"; do
+			  if [ "$VM_DISK" == "Exit" ]; then
+				echo -e "${G}${OK}Back 2 Menu...${X}"
+				continue 2
+			  elif [ -n "$VM_DISK" ]; then
+				echo -e "${G}You have selected: $VM_DISK${X}"
+				break
+			  else
+				echo -e "${R}Invalid selection. Please try again.${X}"
+			  fi
+			done
 
-            # Check Storage type
-            VM_DISK_TYPE=$(pvesm status | awk -v s="$VM_DISK" '$1 == s {print $2}')
-            echo "Storage type: $VM_DISK_TYPE"
+			
+			# Next available SATA-Port
+			find_available_sata_port() {
+			  for PORT in {1..5}; do
+				if ! qm config $VM_ID | grep -q "sata$PORT"; then
+				  echo "sata$PORT"
+				  return
+				fi
+			  done
+			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
+			}
 
-            # Ask for disk size (at least 32 GB)
-            read -p "Enter the disk size in GB (minimum 32 GB): " DISK_SIZE
+			# Check Storage type
+			VM_DISK_TYPE=$(pvesm status | awk -v s="$VM_DISK" '$1 == s {print $2}')
+			echo "Storage type: $VM_DISK_TYPE"
 
-            if [[ ! "$DISK_SIZE" =~ ^[0-9]+$ ]] || [ "$DISK_SIZE" -lt 32 ]; then
-                echo -e "${R}Invalid input. The disk size must be a number and at least 32 GB.${X}"
-                continue
-            fi
+			# Ask for disk size (at least 32 GB)
+			read -p "Enter the disk size in GB (minimum 32 GB): " DISK_SIZE
 
-            DISK_NAME="vm-$VM_ID-disk-$SATA_PORT"
+			if [[ ! "$DISK_SIZE" =~ ^[0-9]+$ ]] || [ "$DISK_SIZE" -lt 32 ]; then
+			  echo -e "${R}Invalid input. The disk size must be a number and at least 32 GB.${X}"
+			  continue
+			fi
 
-            # Generate disk path > block/file based
-            if [[ "$VM_DISK_TYPE" == "dir" || "$VM_DISK_TYPE" == "nfs" || "$VM_DISK_TYPE" == "cifs" || "$VM_DISK_TYPE" == "btrfs" ]]; then 
-                DISK_PATH="$VM_DISK:$DISK_SIZE,format=qcow2"  # Path for dir, nfs, cifs, btrfs
-                sleep 1
-                qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
-            else
-                DISK_PATH="$VM_DISK:$DISK_SIZE"  # Path for lvmthin, zfspool, etc.
-                sleep 1
-                qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
-            fi
+			SATA_PORT=$(find_available_sata_port)
+			DISK_NAME="vm-$VM_ID-disk-$SATA_PORT"
 
-            echo ""
-            echo -e "${G}${OK}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
-            ;;
-        b) #Physical Disk
+			# Generate disk path > block/file based
+			if [[ "$VM_DISK_TYPE" == "dir" || "$VM_DISK_TYPE" == "nfs" || "$VM_DISK_TYPE" == "cifs" || "$VM_DISK_TYPE" == "btrfs" ]]; then 
+			  DISK_PATH="$VM_DISK:$DISK_SIZE,format=qcow2"  # Path for dir, nfs, cifs, btrfs
+			  sleep 1
+			  qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
+			else
+			  DISK_PATH="$VM_DISK:$DISK_SIZE"  # Path for lvmthin, zfspool,..
+			  sleep 1
+			  qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
+			fi
+			
+			echo ""
+			echo -e "${G}${OK}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
+			;;
+		b) #Physical Disk
 			echo -e "${C}${TAB}Show Physical Hard Disk${X}"
 			echo ""
 			
 			# Next available SATA-Port
-			find_available_sata_port_physical() {
+			find_available_sata_port() {
 			  for PORT in {1..5}; do
 				if ! qm config $VM_ID | grep -q "sata$PORT"; then
 				  echo "sata$PORT"
@@ -171,8 +184,7 @@ while true; do
 			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
 			}
 			
-			SATA_PORT_PHYSICAL=$(find_available_sata_port_physical)
-						
+			SATA_PORT=$(find_available_sata_port)
 			DISKS=$(find /dev/disk/by-id/ -type l -print0 | xargs -0 ls -l | grep -v -E '[0-9]$' | awk -F' -> ' '{print $1}' | awk -F'/by-id/' '{print $2}')
 			DISK_ARRAY=($(echo "$DISKS"))
 
@@ -209,7 +221,7 @@ while true; do
 				echo -e "${Y}You have selected $SELECTED_DISK.${X}"
 				echo -e "${Y}${WARN}Copy & Paste this command into your PVE shell ${R}by your own risk!${X}"
 				echo "-----------"
-				echo -e "${C}${TAB}${START}qm set $VM_ID -$SATA_PORT_PHYSICAL /dev/disk/by-id/$SELECTED_DISK${X}"
+				echo -e "${C}${TAB}${START}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK${X}"
 				echo "-----------"
 				sleep 3
 			;;
@@ -223,3 +235,4 @@ while true; do
             ;;
     esac
 done
+
