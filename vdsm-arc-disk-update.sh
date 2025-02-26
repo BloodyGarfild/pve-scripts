@@ -23,7 +23,6 @@ echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo ""
 
 # Continue Script?
-# Continue Script?
 echo -e "${Y}${INFO}This tool can only update an existing VM.${X}"
 echo "-----"
 echo -e "${C}1: Virtual disk - Add more virtual Disks to vDSM.Arc${X}"
