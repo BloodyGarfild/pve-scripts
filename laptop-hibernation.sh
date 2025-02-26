@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Script Name: laptop-hibernation.sh
-# Description: Disable Hibernation on LAptop PVE hosts
 # Author: And-rix (https://github.com/And-rix)
 # Version: v1.0
 # Creation: 17.02.2025

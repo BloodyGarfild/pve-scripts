@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Script Name: vdsm-arc.sh
-# Description: Automated install script for vDSM-Arc on PVE
 # Author: And-rix (https://github.com/And-rix)
 # Version: v3.0
 # Creation: 18.02.2025
