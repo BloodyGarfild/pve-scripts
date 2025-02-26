@@ -260,6 +260,19 @@ read -n 1 option
 		b) #Physical Disk
 			echo -e "${C}${TAB}Show Physical Hard Disk${X}"
 			echo ""
+			
+			# Next available SATA-Port
+			find_available_sata_port_physical() {
+			  for PORT in {1..5}; do
+				if ! qm config $VM_ID | grep -q "sata$PORT"; then
+				  echo "sata$PORT"
+				  return
+				fi
+			  done
+			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
+			}
+			
+			SATA_PORT_PHYSICAL=$(find_available_sata_port_physical)
 						
 			DISKS=$(find /dev/disk/by-id/ -type l -print0 | xargs -0 ls -l | grep -v -E '[0-9]$' | awk -F' -> ' '{print $1}' | awk -F'/by-id/' '{print $2}')
 			DISK_ARRAY=($(echo "$DISKS"))
@@ -297,7 +310,7 @@ read -n 1 option
 				echo -e "${Y}You have selected $SELECTED_DISK.${X}"
 				echo -e "${Y}${WARN}Copy & Paste this command into your PVE shell ${R}by your own risk!${X}"
 				echo "-----------"
-				echo -e "${C}${TAB}${START}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK${X}"
+				echo -e "${C}${TAB}${START}qm set $VM_ID -$SATA_PORT_PHYSICAL /dev/disk/by-id/$SELECTED_DISK${X}"
 				echo "-----------"
 				sleep 3
 			;;
