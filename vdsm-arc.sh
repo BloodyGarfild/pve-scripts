@@ -171,8 +171,29 @@ echo -e "${G}${OK} VM $VM_NAME (ID: $VM_ID) has been successfully created!${X}"
 echo -e "${G}${OK} SATA0: Imported image (${NEW_IMG_FILE})${X}"
 echo "------"
 
-# Choose the Hard Disk 
+# Function available SATA port
 while true; do
+	find_available_sata_port() {
+		for PORT in {1..5}; do
+			if ! qm config $VM_ID | grep -q "sata$PORT"; then
+				echo "sata$PORT"
+				return
+			fi
+		done
+		echo ""  
+	}
+
+# Check available SATA port before proceeding
+	SATA_PORT=$(find_available_sata_port)
+
+	if [[ -z "$SATA_PORT" ]]; then
+		echo ""
+		echo -e "${R}${NOTOK}No available SATA ports between SATA1 and SATA5. Exiting...${X}"
+		echo ""
+		exit 1  
+	fi
+
+# Choose the Hard Disk 
 echo ""
 echo -e "${Y}${DISK} Choose your option:${X}"
 echo -e "${C}a) Create Virtual Hard Disk${X}"
@@ -208,18 +229,6 @@ read -n 1 option
 			  fi
 			done
 
-			
-			# Next available SATA-Port
-			find_available_sata_port() {
-			  for PORT in {1..5}; do
-				if ! qm config $VM_ID | grep -q "sata$PORT"; then
-				  echo "sata$PORT"
-				  return
-				fi
-			  done
-			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
-			}
-
 			# Check Storage type
 			VM_DISK_TYPE=$(pvesm status | awk -v s="$VM_DISK" '$1 == s {print $2}')
 			echo "Storage type: $VM_DISK_TYPE"
@@ -232,7 +241,6 @@ read -n 1 option
 			  continue
 			fi
 
-			SATA_PORT=$(find_available_sata_port)
 			DISK_NAME="vm-$VM_ID-disk-$SATA_PORT"
 
 			# Generate disk path > block/file based
@@ -252,19 +260,7 @@ read -n 1 option
 		b) #Physical Disk
 			echo -e "${C}${TAB}Show Physical Hard Disk${X}"
 			echo ""
-			
-			# Next available SATA-Port
-			find_available_sata_port() {
-			  for PORT in {1..5}; do
-				if ! qm config $VM_ID | grep -q "sata$PORT"; then
-				  echo "sata$PORT"
-				  return
-				fi
-			  done
-			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
-			}
-			
-			SATA_PORT=$(find_available_sata_port)
+						
 			DISKS=$(find /dev/disk/by-id/ -type l -print0 | xargs -0 ls -l | grep -v -E '[0-9]$' | awk -F' -> ' '{print $1}' | awk -F'/by-id/' '{print $2}')
 			DISK_ARRAY=($(echo "$DISKS"))
 
