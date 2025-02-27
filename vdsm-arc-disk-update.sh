@@ -23,25 +23,25 @@ echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo ""
 
 # Continue Script?
-echo -e "${Y}${INFO}This tool can only update an existing VM.${X}"
+echo -e "${INFO}${Y}This tool can only update an existing VM.${X}"
 echo "-----"
 echo -e "${C}1: Virtual disk - Add more virtual Disks to vDSM.Arc${X}"
 echo -e "${C}2: Physical disk - Show the command to paste in PVE shell${X}"
 echo "-----"
-echo -e "${Y}${DISK}Supported filesystem types:${X}"
+echo -e "${DISK}${Y}Supported filesystem types:${X}"
 echo -e "${C} dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool${X}"
 echo "-----"
 echo ""
-echo -e "${Y}${INFO}Run script now? (y/Y)${X}"
+echo -e "${INFO}${Y}Run script now? (y/Y)${X}"
 read run_script
 echo ""
 
 if [[ "$run_script" =~ ^[Yy]$ ]]; then
-    echo -e "${G}${OK}Running...${X}"
+    echo -e "${OK}${G}Running...${X}"
     echo ""
     echo ""
 else
-    echo -e "${R}${NOTOK}Stopping...${X}"
+    echo -e "${NOTOK}${R}Stopping...${X}"
     echo ""
     exit 1
 fi
@@ -72,11 +72,11 @@ while true; do
     # Check VM exists
     if CHECK_VM_EXISTS "$VM_ID"; then
         echo ""
-        echo -e "${G}${OK}The VM with ID $VM_ID exists. Starting precheck...${X}"
+        echo -e "${OK}${G}The VM with ID $VM_ID exists. Starting precheck...${X}"
         break
     else
         echo ""
-        echo -e "${R}${NOTOK}The VM with ID $VM_ID does not exist. Please try again.${X}"
+        echo -e "${NOTOK}${R}The VM with ID $VM_ID does not exist. Please try again.${X}"
     fi
 done
 
@@ -98,12 +98,12 @@ while true; do
 
 	if [[ -z "$PRE_SATA_PORT" ]]; then
 		echo ""
-		echo -e "${R}${NOTOK}No available SATA ports between SATA1 and SATA5. Exiting...${X}"
+		echo -e "${NOTOK}${R}No available SATA ports between SATA1 and SATA5. Exiting...${X}"
 		exit 1  
 	fi
 	
     echo ""
-    echo -e "${Y}${DISK} Choose your option:${X}"
+    echo -e "${DISK}${Y}Choose your option:${X}"
     echo -e "${C}a) Create Virtual Hard Disk${X}"
     echo -e "${C}b) Show Physical Hard Disk${X}"
     echo -e "${R}c) Exit${X}"
@@ -111,7 +111,7 @@ while true; do
 
     case "$option" in
         a) #Virtual Disk
-			echo -e "${C}${TAB}Create Virtual Hard Disk${X}"
+			echo -e "${TAB}${C}Create Virtual Hard Disk${X}"
 			echo ""
 			
 			# Storage locations > Disk images
@@ -127,7 +127,7 @@ while true; do
 			echo -e "${Y}Available target location for Virtual Disk:${X}"
 			select VM_DISK in $VM_DISKS "Exit"; do
 			  if [ "$VM_DISK" == "Exit" ]; then
-				echo -e "${G}${OK}Back 2 Menu...${X}"
+				echo -e "${OK}${G}Back 2 Menu...${X}"
 				continue 2
 			  elif [ -n "$VM_DISK" ]; then
 				echo -e "${G}You have selected: $VM_DISK${X}"
@@ -171,8 +171,8 @@ while true; do
 				qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
 			elif [[ "$VM_DISK_TYPE" == "pbs" || "$VM_DISK_TYPE" == "glusterfs" || "$VM_DISK_TYPE" == "cephfs" || "$VM_DISK_TYPE" == "iscsi" || "$VM_DISK_TYPE" == "iscsidirect" || "$VM_DISK_TYPE" == "rbd" ]]; then
 				echo ""
-				echo -e "${R}${NOTOK}Unsupported filesystem type: $VM_DISK_TYPE ${X}" # Disable some storage types
-				echo -e "${Y}${INFO}Supported filesystem types: ${C} dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool ${X}"
+				echo -e "${NOTOK}${R}Unsupported filesystem type: $VM_DISK_TYPE ${X}" # Disable some storage types
+				echo -e "${INFO}${Y}Supported filesystem types: ${C} dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool ${X}"
 				continue
 			else
 				DISK_PATH="$VM_DISK:$DISK_SIZE"  # Block level storages
@@ -181,11 +181,11 @@ while true; do
 			fi
 
 			echo ""
-			echo -e "${G}${OK}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
+			echo -e "${OK}${G}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
 
 			;;
 		b) #Physical Disk
-			echo -e "${C}${TAB}Show Physical Hard Disk${X}"
+			echo -e "${TAB}${C}Show Physical Hard Disk${X}"
 			echo ""
 			
 			# Next available SATA-Port
@@ -215,38 +215,38 @@ while true; do
 			# Input check
 			if ! [[ "$SELECTION" =~ ^[0-9]+$ ]]; then
 			  echo ""
-			  echo -e "${Y}${WARN}Invalid input. Please enter a number.${X}"
+			  echo -e "${WARN}${Y}Invalid input. Please enter a number.${X}"
 			  continue 2
 			fi
 
 			# Validating
 			if [[ "$SELECTION" -eq 0 ]]; then
 			  echo ""
-			  echo -e "${G}${OK}Back 2 Menu...${X}"
+			  echo -e "${OK}${G}Back 2 Menu...${X}"
 			  continue 2
 			elif [[ "$SELECTION" -ge 1 && "$SELECTION" -le "${#DISK_ARRAY[@]}" ]]; then
 			  SELECTED_DISK="${DISK_ARRAY[$((SELECTION - 1))]}"
 			else
 			  echo ""
-			  echo -e "${Y}${WARN}Invalid selection.${X}"
+			  echo -e "${WARN}${Y}Invalid selection.${X}"
 			  continue 2
 			fi
 			
 			echo ""
 				echo -e "${Y}You have selected $SELECTED_DISK.${X}"
-				echo -e "${Y}${WARN}Copy & Paste this command into your PVE shell ${R}by your own risk!${X}"
+				echo -e "${WARN}${Y}Copy & Paste this command into your PVE shell ${R}by your own risk!${X}"
 				echo "-----------"
-				echo -e "${C}${TAB}${START}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK${X}"
+				echo -e "${TAB}${START}${C}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK${X}"
 				echo "-----------"
 				sleep 3
 			;;
         c) # Exit
-            echo -e "${C}${OK}Exiting the script.${X}"
+            echo -e "${OK}${C}Exiting the script.${X}"
             echo ""
             exit 0
             ;;
         *) # False selection
-            echo -e "${R}${WARN}Invalid input. Please choose 'a' | 'b' | 'c'.${X}"
+            echo -e "${WARN}${R}Invalid input. Please choose 'a' | 'b' | 'c'.${X}"
             ;;
     esac
 done

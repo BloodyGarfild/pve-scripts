@@ -29,21 +29,21 @@ echo -e "${R}'/etc/systemd/logind.conf'${X}"
 echo "-----"
 echo -e "${Y}to use a laptop as an PVE host${X}"
 echo ""
-echo -e "${Y}${INFO}Run script now? (y/N)${X}"
+echo -e "${INFO}${Y}Run script now? (y/N)${X}"
 read run_script
 echo ""
 
 if [[ "$run_script" =~ ^[Yy]$ ]]; then
-		echo -e "${G}${OK}Running...${X}"
+		echo -e "${OK}${G}Running...${X}"
   		echo ""
     else
-		echo -e "${R}${NOTOK}Stopping...${X}"
+		echo -e "${NOTOK}${R}Stopping...${X}"
 		exit 1
 fi
 
 # Ensure the script is run as root
 if [[ $EUID -ne 0 ]]; then
-    echo "${R}${WARN} This script must be run as root!${X}"
+    echo "${WARN}${R}This script must be run as root!${X}"
     exit 1
 fi
 
@@ -71,4 +71,4 @@ echo "HandleLidSwitchDocked=ignore" >> $CONFIG_FILE
 # Restart systemd-logind to apply changes
 systemctl restart systemd-logind
 
-echo -e "${G}${OK} Proxmox laptop configuration completed!${X}"
+echo -e "${OK}${G}Proxmox laptop configuration completed!${X}"
