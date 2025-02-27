@@ -28,6 +28,9 @@ echo "-----"
 echo -e "${C}1: Virtual disk - Add more virtual Disks to vDSM.Arc${X}"
 echo -e "${C}2: Physical disk - Show the command to paste in PVE shell${X}"
 echo "-----"
+echo -e "${Y}${DISK}Supported filesystem types:${X}"
+echo -e "${C} dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool${X}"
+echo "-----"
 echo ""
 echo -e "${Y}${INFO}Run script now? (y/Y)${X}"
 read run_script
@@ -162,18 +165,24 @@ while true; do
 			DISK_NAME="vm-$VM_ID-disk-$SATA_PORT"
 
 			# Generate disk path > block/file based
-			if [[ "$VM_DISK_TYPE" == "dir" || "$VM_DISK_TYPE" == "nfs" || "$VM_DISK_TYPE" == "cifs" || "$VM_DISK_TYPE" == "btrfs" ]]; then 
-			  DISK_PATH="$VM_DISK:$DISK_SIZE,format=qcow2"  # Path for dir, nfs, cifs, btrfs
-			  sleep 1
-			  qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
+			if [[ "$VM_DISK_TYPE" == "dir" || "$VM_DISK_TYPE" == "btrfs" || "$VM_DISK_TYPE" == "nfs" || "$VM_DISK_TYPE" == "cifs" ]]; then
+				DISK_PATH="$VM_DISK:$DISK_SIZE,format=qcow2"  # File level storages 
+				sleep 1
+				qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
+			elif [[ "$VM_DISK_TYPE" == "pbs" || "$VM_DISK_TYPE" == "glusterfs" || "$VM_DISK_TYPE" == "cephfs" || "$VM_DISK_TYPE" == "iscsi" || "$VM_DISK_TYPE" == "iscsidirect" || "$VM_DISK_TYPE" == "rbd" ]]; then
+				echo ""
+				echo -e "${R}${NOTOK}Unsupported filesystem type: $VM_DISK_TYPE ${X}" # Disable some storage types
+				echo -e "${Y}${INFO}Supported filesystem types: ${C} dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool ${X}"
+				continue
 			else
-			  DISK_PATH="$VM_DISK:$DISK_SIZE"  # Path for lvmthin, zfspool,..
-			  sleep 1
-			  qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
+				DISK_PATH="$VM_DISK:$DISK_SIZE"  # Block level storages
+				sleep 1
+				qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
 			fi
-			
+
 			echo ""
 			echo -e "${G}${OK}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
+
 			;;
 		b) #Physical Disk
 			echo -e "${C}${TAB}Show Physical Hard Disk${X}"
