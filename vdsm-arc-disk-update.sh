@@ -2,9 +2,9 @@
 
 # Script Name: vdsm-arc-disk-update.sh
 # Author: And-rix (https://github.com/And-rix)
-# Version: v1.1
+# Version: v1.0
 # Creation: 26.02.2025
-# Modified: 27.02.2025 (v1.1)
+# Modified: 26.02.2025 (v1.0)
 
 export LANG=en_US.UTF-8
 
@@ -27,6 +27,9 @@ echo -e "${Y}${INFO}This tool can only update an existing VM.${X}"
 echo "-----"
 echo -e "${C}1: Virtual disk - Add more virtual Disks to vDSM.Arc${X}"
 echo -e "${C}2: Physical disk - Show the command to paste in PVE shell${X}"
+echo "-----"
+echo -e "${Y}${DISK}Supported filesystem types:${X}"
+echo -e "${C} dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool${X}"
 echo "-----"
 echo ""
 echo -e "${Y}${INFO}Run script now? (y/Y)${X}"
