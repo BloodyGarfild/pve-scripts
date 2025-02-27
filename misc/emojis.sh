@@ -1,11 +1,11 @@
 #!/bin/bash
 TAB="  "
-INFO="${TAB}ℹ️${TAB}${X}"
-START="${TAB}▶️${TAB}${X}"
-OK="${TAB}✅${TAB}${X}"
-NOTOK="${TAB}❌${TAB}${X}"
-WARN="${TAB}⚠️${TAB}${X}"
-DISK="${TAB}💾${TAB}${X}"
+INFO="${TAB}ℹ️${TAB}"
+START="${TAB}▶️${TAB}"
+OK="${TAB}✅${TAB}"
+NOTOK="${TAB}❌${TAB}"
+WARN="${TAB}⚠️${TAB}"
+DISK="${TAB}💾${TAB}"
 
 
 
