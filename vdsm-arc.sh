@@ -29,16 +29,16 @@ echo -e "${Y}CPU: 2x | Mem: 4096MB | NIC: vmbr0 | Storage: selectable${X}"
 echo -e "${R}vDSM-Arc will be mapped as SATA0 > Do not change this!${X}"
 echo "-----"
 echo ""
-echo -e "${Y}${INFO}Run script now? (y/Y)${X}"
+echo -e "${INFO}${Y}Run script now? (y/Y)${X}"
 read run_script
 echo ""
 
 if [[ "$run_script" =~ ^[Yy]$ ]]; then
-		echo -e "${G}${OK}Running...${X}"
+		echo -e "${OK}${G}Running...${X}"
   		echo ""
 		echo ""
     else
-		echo -e "${R}${NOTOK}Stopping...${X}"
+		echo -e "${NOTOK}${R}Stopping...${X}"
 		echo ""
 		exit 1
 fi
@@ -48,12 +48,12 @@ STORAGES=$(pvesm status -content images | awk 'NR>1 {print $1}')
 
 # Check if storages exist
 if [ -z "$STORAGES" ]; then
-    echo -e "${R}${NOTOK}No storage locations found that support disk images.${X}"
+    echo -e "${NOTOK}${R}No storage locations found that support disk images.${X}"
     exit 1
 fi
 
 # Storage Options
-echo -e "${G}${DISK}Please select target Storage for Arc install (SATA0):${X}"
+echo -e "${DISK}${G}Please select target Storage for Arc install (SATA0):${X}"
 select STORAGE in $STORAGES; do
     if [ -n "$STORAGE" ]; then
         echo -e "${G}You selected: $STORAGE${X}"
@@ -69,7 +69,7 @@ for pkg in unzip wget; do
         echo -e "${Y}'$pkg' is not installed. Installing...${X}"
         apt-get update && apt-get install -y "$pkg"
         if ! command -v "$pkg" &> /dev/null; then
-            echo -e "${R}${NOTOK}Error: '$pkg' could not be installed. Exiting.${X}"
+            echo -e "${NOTOK}${R}Error: '$pkg' could not be installed. Exiting.${X}"
             exit 1
         fi
     fi
@@ -160,22 +160,22 @@ clear
 
 # Delete temp file?
 echo ""
-echo -e "${Y}${WARN} Do you want to delete the temp downloaded file ($LATEST_FILENAME) from $DOWNLOAD_PATH? (y/Y): ${X}"
+echo -e "${INFO}${Y}Do you want to delete the temp downloaded file ($LATEST_FILENAME) from $DOWNLOAD_PATH? (y/Y): ${X}"
 read delete_answer
 echo ""
 
 if [[ "$delete_answer" =~ ^[Yy]$ ]]; then
     echo "Deleting the file..."
     rm -f "$DOWNLOAD_PATH/$LATEST_FILENAME"
-    echo -e "${G}${OK}($LATEST_FILENAME) from '$DOWNLOAD_PATH' deleted.${X}"
+    echo -e "${OK}${G}($LATEST_FILENAME) from '$DOWNLOAD_PATH' deleted.${X}"
 else
-    echo -e "${Y}${NOTOK}($LATEST_FILENAME) from '$DOWNLOAD_PATH' was not deleted.${X}"
+    echo -e "${NOTOK}${Y}($LATEST_FILENAME) from '$DOWNLOAD_PATH' was not deleted.${X}"
 fi
 
 # Success message
 echo "------"
-echo -e "${G}${OK} VM $VM_NAME (ID: $VM_ID) has been successfully created!${X}"
-echo -e "${G}${OK} SATA0: Imported image (${NEW_IMG_FILE})${X}"
+echo -e "${OK}${G}VM $VM_NAME (ID: $VM_ID) has been successfully created!${X}"
+echo -e "${OK}${G}SATA0: Imported image (${NEW_IMG_FILE})${X}"
 echo "------"
 
 # Selection menu / Precheck
@@ -196,12 +196,12 @@ while true; do
 
 	if [[ -z "$PRE_SATA_PORT" ]]; then
 		echo ""
-		echo -e "${R}${NOTOK}No available SATA ports between SATA1 and SATA5. Exiting...${X}"
+		echo -e "${NOTOK}${R}No available SATA ports between SATA1 and SATA5. Exiting...${X}"
 		exit 1  
 	fi
 	
     echo ""
-    echo -e "${Y}${DISK} Choose your option:${X}"
+    echo -e "${DISK}${Y}Choose your option:${X}"
     echo -e "${C}a) Create Virtual Hard Disk${X}"
     echo -e "${C}b) Show Physical Hard Disk${X}"
     echo -e "${R}c) Exit${X}"
@@ -209,7 +209,7 @@ while true; do
 
     case "$option" in
         a) #Virtual Disk
-			echo -e "${C}${TAB}Create Virtual Hard Disk${X}"
+			echo -e "${TAB}${C}Create Virtual Hard Disk${X}"
 			echo ""
 			
 			# Storage locations > Disk images
@@ -225,7 +225,7 @@ while true; do
 			echo -e "${Y}Available target location for Virtual Disk:${X}"
 			select VM_DISK in $VM_DISKS "Exit"; do
 			  if [ "$VM_DISK" == "Exit" ]; then
-				echo -e "${G}${OK}Back 2 Menu...${X}"
+				echo -e "${OK}${G}Back 2 Menu...${X}"
 				continue 2
 			  elif [ -n "$VM_DISK" ]; then
 				echo -e "${G}You have selected: $VM_DISK${X}"
@@ -274,10 +274,10 @@ while true; do
 			fi
 			
 			echo ""
-			echo -e "${G}${OK}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
+			echo -e "${OK}${G}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
 			;;
 		b) #Physical Disk
-			echo -e "${C}${TAB}Show Physical Hard Disk${X}"
+			echo -e "${TAB}${C}Show Physical Hard Disk${X}"
 			echo ""
 			
 			# Next available SATA-Port
@@ -307,38 +307,38 @@ while true; do
 			# Input check
 			if ! [[ "$SELECTION" =~ ^[0-9]+$ ]]; then
 			  echo ""
-			  echo -e "${Y}${WARN}Invalid input. Please enter a number.${X}"
+			  echo -e "${WARN}${Y}Invalid input. Please enter a number.${X}"
 			  continue 2
 			fi
 
 			# Validating
 			if [[ "$SELECTION" -eq 0 ]]; then
 			  echo ""
-			  echo -e "${G}${OK}Back 2 Menu...${X}"
+			  echo -e "${OK}${G}Back 2 Menu...${X}"
 			  continue 2
 			elif [[ "$SELECTION" -ge 1 && "$SELECTION" -le "${#DISK_ARRAY[@]}" ]]; then
 			  SELECTED_DISK="${DISK_ARRAY[$((SELECTION - 1))]}"
 			else
 			  echo ""
-			  echo -e "${Y}${WARN}Invalid selection.${X}"
+			  echo -e "${WARN}${Y}Invalid selection.${X}"
 			  continue 2
 			fi
 			
 			echo ""
 				echo -e "${Y}You have selected $SELECTED_DISK.${X}"
-				echo -e "${Y}${WARN}Copy & Paste this command into your PVE shell ${R}by your own risk!${X}"
+				echo -e "${WARN}${Y}Copy & Paste this command into your PVE shell ${R}by your own risk!${X}"
 				echo "-----------"
-				echo -e "${C}${TAB}${START}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK${X}"
+				echo -e "${TAB}${START}${C}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK${X}"
 				echo "-----------"
 				sleep 3
 			;;
         c) # Exit
-            echo -e "${C}${OK}Exiting the script.${X}"
+            echo -e "${OK}${C}Exiting the script.${X}"
             echo ""
             exit 0
             ;;
         *) # False selection
-            echo -e "${R}${WARN}Invalid input. Please choose 'a' | 'b' | 'c'.${X}"
+            echo -e "${WARN}${R}Invalid input. Please choose 'a' | 'b' | 'c'.${X}"
             ;;
     esac
 done
