@@ -29,7 +29,7 @@ echo -e "${C}1: Virtual disk - Add more virtual Disks to vDSM.Arc${X}"
 echo -e "${C}2: Physical disk - Show the command to paste in PVE shell${X}"
 echo "-----"
 echo -e "${DISK}${Y}Supported filesystem types:${X}"
-echo -e "${C} dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool${X}"
+echo -e "${TAB}${TAB}${C}dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool${X}"
 echo "-----"
 echo ""
 echo -e "${INFO}${Y}Run script now? (y/Y)${X}"
@@ -172,7 +172,8 @@ while true; do
 			elif [[ "$VM_DISK_TYPE" == "pbs" || "$VM_DISK_TYPE" == "glusterfs" || "$VM_DISK_TYPE" == "cephfs" || "$VM_DISK_TYPE" == "iscsi" || "$VM_DISK_TYPE" == "iscsidirect" || "$VM_DISK_TYPE" == "rbd" ]]; then
 				echo ""
 				echo -e "${NOTOK}${R}Unsupported filesystem type: $VM_DISK_TYPE ${X}" # Disable some storage types
-				echo -e "${INFO}${Y}Supported filesystem types: ${C} dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool ${X}"
+				echo -e "${DISK}${Y}Supported filesystem types:${X}"
+				echo -e "${TAB}${TAB}${C}dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool${X}"
 				continue
 			else
 				DISK_PATH="$VM_DISK:$DISK_SIZE"  # Block level storages
