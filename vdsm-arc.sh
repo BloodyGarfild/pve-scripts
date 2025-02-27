@@ -2,9 +2,8 @@
 
 # Script Name: vdsm-arc.sh
 # Author: And-rix (https://github.com/And-rix)
-# Version: v3.0
+# Version: v3.0 - 27.02.2025
 # Creation: 18.02.2025
-# Modified: 26.02.2025 (v3.0)
 
 export LANG=en_US.UTF-8
 
