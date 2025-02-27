@@ -136,7 +136,6 @@ while true; do
 				echo -e "${R}Invalid selection. Please try again.${X}"
 			  fi
 			done
-
 			
 			# Next available SATA-Port
 			find_available_sata_port() {
@@ -183,7 +182,6 @@ while true; do
 
 			echo ""
 			echo -e "${OK}${G}Disk created and assigned to $SATA_PORT: $DISK_PATH ${X}"
-
 			;;
 		b) #Physical Disk
 			echo -e "${TAB}${C}Show Physical Hard Disk${X}"
@@ -245,9 +243,9 @@ while true; do
             echo -e "${OK}${C}Exiting the script.${X}"
             echo ""
             exit 0
-            ;;
+			;;
         *) # False selection
             echo -e "${WARN}${R}Invalid input. Please choose 'a' | 'b' | 'c'.${X}"
-            ;;
+			;;
     esac
 done
