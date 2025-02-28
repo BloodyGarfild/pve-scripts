@@ -17,16 +17,16 @@ clear
 # Post message
 echo""
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
-echo -e "${C}++++++++++++++++++ Laptop-Hibernation +++++++++++++++++++${X}"
+echo -e "${C}++++++++++++++++++${X} Laptop-Hibernation ${C}+++++++++++++++++++${X}"
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo""
 
 # Ask for continue script
-echo -e "${Y}This script will add the required lines into${X}"
+echo -e "This script will add the required lines into"
 echo "-----"
 echo -e "${R}'/etc/systemd/logind.conf'${X}"
 echo "-----"
-echo -e "${Y}to use a laptop as an PVE host${X}"
+echo -e "to use a laptop as an PVE host"
 echo ""
 echo -e "${INFO}${Y}Run script now? (y/N)${X}"
 read run_script
