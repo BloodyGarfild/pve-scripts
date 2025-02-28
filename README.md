@@ -4,7 +4,7 @@ Just copy & paste into your PVE shell 😎
 
 ## vdsm-arc.sh
 > Full automated Install script for vDSM Arc Loader from [AuxXxilium](https://github.com/AuxXxilium) on your PVE host  
-> Default VM: 2x CPU | 4096M RAM | vmbr0 NIC | selectable Storage  
+> **Default VM**  |  CPU: 2 Cores  |  RAM: 4096M  |  NIC: vmbr0  |  Storage: _selectable_  
 > _Supported filesystem types:_ dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool
 ```shell
 bash -c "$(wget -qLO - https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/vdsm-arc.sh)"
