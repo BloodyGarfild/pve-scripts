@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script Name: pve-disk-update.sh
+# Script Name: vm-disk-update.sh
 # Author: And-rix (https://github.com/And-rix)
 # Version: v1.2 - 28.02.2025
 # Creation: 26.02.2025
@@ -17,7 +17,7 @@ clear
 # Post message
 echo ""
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
-echo -e "${C}++++++++++++++++++${X} PVE-Disk-Update ${C}++++++++++++++++++++++${X}"
+echo -e "${C}+++++++++++++++++++++${X} VM-Disk-Update ${C}++++++++++++++++++++${X}"
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo ""
 
