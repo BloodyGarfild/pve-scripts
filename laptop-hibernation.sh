@@ -15,11 +15,11 @@ source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/head
 clear
 
 # Post message
-echo""
-echo -e "${C}---------------------------------------------------------${X}"
+echo ""
+echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo -e "${C}++++++++++++++++++${X} Laptop-Hibernation ${C}+++++++++++++++++++${X}"
-echo -e "${C}---------------------------------------------------------${X}"
-echo""
+echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
+echo ""
 
 # Ask for continue script
 echo -e "This script will add the required lines into"
