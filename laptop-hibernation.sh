@@ -2,7 +2,7 @@
 
 # Script Name: laptop-hibernation.sh
 # Author: And-rix (https://github.com/And-rix)
-# Version: v1.0 - 27.02.2025
+# Version: v1.1 - 28.02.2025
 # Creation: 17.02.2025
 
 export LANG=en_US.UTF-8
