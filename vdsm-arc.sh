@@ -17,14 +17,14 @@ clear
 # Post message
 echo ""
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
-echo -e "${C}++++++++++++++++++ vDSM-Arc-Installer +++++++++++++++++++${X}"
+echo -e "${C}++++++++++++++++++${X} vDSM-Arc-Installer ${C}+++++++++++++++++++${X}"
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo ""
 
 # Continue Script?
-echo -e "${Y}vDSM-Arc default settings (can be changed after creation)${X}"
+echo -e "vDSM-Arc default settings ${Y}(can be changed after creation)${X}"
 echo "-----"
-echo -e "${Y}CPU: 2x | Mem: 4096MB | NIC: vmbr0 | Storage: selectable${X}"
+echo -e "${C}CPU: 2x | Mem: 4096MB | NIC: vmbr0 | Storage: selectable${X}"
 echo -e "${R}vDSM-Arc will be mapped as SATA0 > Do not change this!${X}"
 echo "-----"
 echo ""

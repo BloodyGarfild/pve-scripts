@@ -17,7 +17,7 @@ clear
 # Post message
 echo ""
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
-echo -e "${C}++++++++++++++++ vDSM-Arc-Disk-Update +++++++++++++++++++${X}"
+echo -e "${C}++++++++++++++++${X} vDSM-Arc-Disk-Update ${C}+++++++++++++++++++${X}"
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo ""
 
@@ -27,7 +27,7 @@ echo "-----"
 echo -e "${C}1: Virtual disk - Add more virtual Disks to vDSM.Arc${X}"
 echo -e "${C}2: Physical disk - Show the command to paste in PVE shell${X}"
 echo "-----"
-echo -e "${DISK}${Y}Supported filesystem types:${X}"
+echo -e "${DISK}Supported filesystem types:"
 echo -e "${TAB}${C}dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool${X}"
 echo "-----"
 echo ""
