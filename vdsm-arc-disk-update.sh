@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script Name: vdsm-arc-disk-update.sh
+# Script Name: pve-disk-update.sh
 # Author: And-rix (https://github.com/And-rix)
 # Version: v1.1 - 28.02.2025
 # Creation: 26.02.2025
@@ -17,14 +17,14 @@ clear
 # Post message
 echo ""
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
-echo -e "${C}++++++++++++++++${X} vDSM-Arc-Disk-Update ${C}+++++++++++++++++++${X}"
+echo -e "${C}++++++++++++++++++${X} PVE-Disk-Update ${C}++++++++++++++++++++++${X}"
 echo -e "${C}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++${X}"
 echo ""
 
 # Continue Script?
 echo -e "${INFO}${Y}This tool can only update an existing VM.${X}"
 echo "-----"
-echo -e "${C}1: Virtual disk - Add more virtual Disks to vDSM.Arc${X}"
+echo -e "${C}1: Virtual disk - Add more virtual Disks to any VM${X}"
 echo -e "${C}2: Physical disk - Show the command to paste in PVE shell${X}"
 echo "-----"
 echo -e "${DISK}${Y}Supported filesystem types:${X}"
