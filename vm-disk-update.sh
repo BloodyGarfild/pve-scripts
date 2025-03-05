@@ -166,7 +166,7 @@ while true; do
 			if [[ "$VM_DISK_TYPE" == "dir" || "$VM_DISK_TYPE" == "btrfs" || "$VM_DISK_TYPE" == "nfs" || "$VM_DISK_TYPE" == "cifs" ]]; then
 				DISK_PATH="$VM_DISK:$DISK_SIZE,format=qcow2"  # File level storages 
 				sleep 1
-				qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
+				qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0 # Disable Backup
 			elif [[ "$VM_DISK_TYPE" == "pbs" || "$VM_DISK_TYPE" == "glusterfs" || "$VM_DISK_TYPE" == "cephfs" || "$VM_DISK_TYPE" == "iscsi" || "$VM_DISK_TYPE" == "iscsidirect" || "$VM_DISK_TYPE" == "rbd" ]]; then
 				echo ""
 				echo -e "${NOTOK}${R}Unsupported filesystem type: $VM_DISK_TYPE ${X}" # Disable untested storage types
@@ -176,7 +176,7 @@ while true; do
 			else
 				DISK_PATH="$VM_DISK:$DISK_SIZE"  # Block level storages
 				sleep 1
-				qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0
+				qm set "$VM_ID" -$SATA_PORT "$DISK_PATH",backup=0 # Disable Backup
 			fi
 
 			echo ""
