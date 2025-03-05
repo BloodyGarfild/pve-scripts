@@ -10,6 +10,7 @@ export LANG=en_US.UTF-8
 # Import Misc
 source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/misc/colors.sh)
 source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/misc/emojis.sh)
+source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/misc/functions.sh)
 
 # Clearing screen
 clear
@@ -81,7 +82,7 @@ DOWNLOAD_PATH="/var/lib/vz/template/tmp"
 mkdir -p "$DOWNLOAD_PATH"
 
 # Latest .img.zip from GitHub
-LATEST_RELEASE_URL=$(curl -s https://api.github.com/repos/AuxXxilium/arc/releases/latest | grep "browser_download_url" | grep ".img.zip" | cut -d '"' -f 4)
+LATEST_RELEASE_URL=$(curl -s https://api.github.com/repos/AuxXxilium/arc/releases/latest | grep "browser_download_url" | grep "evo.img.zip" | cut -d '"' -f 4)
 LATEST_FILENAME=$(basename "$LATEST_RELEASE_URL")
 
 if [ -f "$DOWNLOAD_PATH/$LATEST_FILENAME" ]; then
@@ -179,17 +180,6 @@ echo "------"
 
 # Selection menu / Precheck
 while true; do
-	# Function available SATA port
-	precheck_sata_port() {
-		for PORT in {1..5}; do
-			if ! qm config $VM_ID | grep -q "sata$PORT"; then
-				echo "sata$PORT"
-				return
-			fi
-		done
-		echo ""  
-	}
-
 	# Check available SATA port before proceeding
 	PRE_SATA_PORT=$(precheck_sata_port)
 
@@ -234,17 +224,6 @@ while true; do
 			  fi
 			done
 			
-			# Next available SATA-Port
-			find_available_sata_port() {
-			  for PORT in {1..5}; do
-				if ! qm config $VM_ID | grep -q "sata$PORT"; then
-				  echo "sata$PORT"
-				  return
-				fi
-			  done
-			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
-			}
-
 			# Check Storage type
 			VM_DISK_TYPE=$(pvesm status | awk -v s="$VM_DISK" '$1 == s {print $2}')
 			echo "Storage type: $VM_DISK_TYPE"
@@ -283,17 +262,6 @@ while true; do
 		b) #Physical Disk
 			echo -e "${TAB}${C}Show Physical Hard Disk${X}"
 			echo ""
-			
-			# Next available SATA-Port
-			find_available_sata_port() {
-			  for PORT in {1..5}; do
-				if ! qm config $VM_ID | grep -q "sata$PORT"; then
-				  echo "sata$PORT"
-				  return
-				fi
-			  done
-			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
-			}
 			
 			SATA_PORT=$(find_available_sata_port)
 			DISKS=$(find /dev/disk/by-id/ -type l -print0 | xargs -0 ls -l | grep -v -E '[0-9]$' | awk -F' -> ' '{print $1}' | awk -F'/by-id/' '{print $2}')
@@ -346,3 +314,4 @@ while true; do
 			;;
     esac
 done
+
