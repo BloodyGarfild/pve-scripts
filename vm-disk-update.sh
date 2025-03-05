@@ -10,6 +10,7 @@ export LANG=en_US.UTF-8
 # Import Misc
 source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/misc/colors.sh)
 source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/misc/emojis.sh)
+source <(curl -s https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/misc/functions.sh)
 
 # Clearing screen
 clear
@@ -81,17 +82,6 @@ done
 
 # Selection menu / Precheck
 while true; do
-	# Function available SATA port
-	precheck_sata_port() {
-		for PORT in {1..5}; do
-			if ! qm config $VM_ID | grep -q "sata$PORT"; then
-				echo "sata$PORT"
-				return
-			fi
-		done
-		echo ""  
-	}
-
 	# Check available SATA port before proceeding
 	PRE_SATA_PORT=$(precheck_sata_port)
 
@@ -135,17 +125,6 @@ while true; do
 				echo -e "${R}Invalid selection. Please try again.${X}"
 			  fi
 			done
-			
-			# Next available SATA-Port
-			find_available_sata_port() {
-			  for PORT in {1..5}; do
-				if ! qm config $VM_ID | grep -q "sata$PORT"; then
-				  echo "sata$PORT"
-				  return
-				fi
-			  done
-			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
-			}
 
 			# Check Storage type
 			VM_DISK_TYPE=$(pvesm status | awk -v s="$VM_DISK" '$1 == s {print $2}')
@@ -185,17 +164,6 @@ while true; do
 		b) #Physical Disk
 			echo -e "${TAB}${C}Show Physical Hard Disk${X}"
 			echo ""
-			
-			# Next available SATA-Port
-			find_available_sata_port() {
-			  for PORT in {1..5}; do
-				if ! qm config $VM_ID | grep -q "sata$PORT"; then
-				  echo "sata$PORT"
-				  return
-				fi
-			  done
-			  echo -e "${R}No available SATA ports between SATA1 and SATA5${X}"
-			}
 			
 			SATA_PORT=$(find_available_sata_port)
 			DISKS=$(find /dev/disk/by-id/ -type l -print0 | xargs -0 ls -l | grep -v -E '[0-9]$' | awk -F' -> ' '{print $1}' | awk -F'/by-id/' '{print $2}')
