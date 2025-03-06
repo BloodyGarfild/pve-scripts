@@ -13,7 +13,7 @@ bash -c "$(wget -qLO - https://raw.githubusercontent.com/And-rix/pve-scripts/ref
 
 
 ## vm-disk-update.sh
-> Add more virtual disks or physical disks to an existing VM on your PVE host   
+> Add more virtual or physical disks to an existing VM on your PVE host   
 > _Supported filesystem types:_ dir, btrfs, nfs, cifs, lvm, lvmthin, zfs, zfspool  
 ```shell
 bash -c "$(wget -qLO - https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/vm-disk-update.sh)"
