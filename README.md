@@ -1,4 +1,4 @@
-# pve-scripts 🚀
+# pve-scripts 
 
 **Just copy & paste into your PVE shell 😎**
 
