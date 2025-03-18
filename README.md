@@ -35,7 +35,7 @@ bash -c "$(wget -qLO - https://raw.githubusercontent.com/And-rix/pve-scripts/ref
 
 ## 💻 laptop-hibernation.sh
 
-This script disable any hibernation mode to run Proxmox on a laptop   
+This script disable any hibernation mode to run Proxmox VE on a laptop   
   
 ```shell
 bash -c "$(wget -qLO - https://raw.githubusercontent.com/And-rix/pve-scripts/refs/heads/main/laptop-hibernation.sh)"
