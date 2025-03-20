@@ -148,6 +148,7 @@ qm set "$VM_ID" --agent enabled=1
 # Set boot order to SATA0 only, disable all other devices
 qm set "$VM_ID" --boot order=sata0
 qm set "$VM_ID" --bootdisk sata0
+qm set "$VM_ID" --onboot 1
 
 # Disable all other boot devices
 qm set "$VM_ID" --ide0 none
