@@ -300,7 +300,7 @@ while true; do
 				echo -e "${Y}You have selected $SELECTED_DISK.${X}"
 				echo -e "${WARN}${Y}Copy & Paste this command into your PVE shell ${R}by your own risk!${X}"
 				echo "-----------"
-				echo -e "${TAB}${START}${C}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK${X}"
+				echo -e "${TAB}${START}${C}qm set $VM_ID -$SATA_PORT /dev/disk/by-id/$SELECTED_DISK,backup=0${X}"
 				echo "-----------"
 				sleep 3
 			;;
