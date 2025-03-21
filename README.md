@@ -20,7 +20,7 @@ bash -c "$(wget -qLO - https://raw.githubusercontent.com/And-rix/pve-scripts/ref
 
 ---
 
-## 💾 vm-disk-update.sh
+## 📟 vm-disk-update.sh
 
 Add more virtual or physical disks to an existing VM on your PVE host   
 
@@ -33,7 +33,7 @@ bash -c "$(wget -qLO - https://raw.githubusercontent.com/And-rix/pve-scripts/ref
 
 ---
 
-## 💻 laptop-hibernation.sh
+## 📟 laptop-hibernation.sh
 
 This script disable any hibernation mode to run Proxmox VE on a laptop   
   
