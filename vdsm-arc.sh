@@ -110,12 +110,29 @@ else
 fi
 
 # VM-ID and configuration
-VM_ID=$(pvesh get /cluster/nextid)
-VM_NAME="vDSM.Arc"
+echo -e "${DISK}${G}Please input VM-ID for VM creation:${X}"
+VM_ID_NEXT=$(pvesh get /cluster/nextid)
+read -n 9 -e -i "$VM_ID_NEXT" VM_ID
+until [[ "$VM_ID" =~ ^[0-9]+$ ]]; do
+    echo -e "${R}Invalid input. Please try again.${G}"
+    read -n 9 -e -i "$VM_ID_NEXT" VM_ID
+done
+echo -e "${G}Your VM ID: $VM_ID${X}"
+
+echo -e "${DISK}${G}Tell me a name for this VM:${X}"
+read -e -i "vDSM.Arc" VM_NAME
+while [[ -z "$VM_NAME" ]]; do
+    echo -e "${R}Invalid VM name. Please try again.${G}"
+    read -e -i "vDSM.Arc" VM_NAME
+done
+echo -e "${G}Your VM name: $VM_NAME${X}"
+
+#VM_ID=$(pvesh get /cluster/nextid)
+#VM_NAME="vDSM.Arc"
 STORAGE=$STORAGE
 CORES=2
 MEMORY=4096
-Q35_VERSION="pc-q35-8.0"  
+Q35_VERSION="q35"  
 
 # Create the VM 
 qm create "$VM_ID" --name "$VM_NAME" --memory "$MEMORY" --cores "$CORES" --net0 virtio,bridge=vmbr0 --machine "$Q35_VERSION"
